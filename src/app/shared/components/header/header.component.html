@@ -1,26 +1,62 @@
-<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-  <div class="container-fluid">
-    <a class="navbar-brand" routerLink="/">Classter</a>
-    <button
-      class="navbar-toggler"
-      type="button"
-      data-bs-toggle="collapse"
-      data-bs-target="#navbarNav"
-      aria-controls="navbarNav"
-      aria-expanded="false"
-      aria-label="Toggle navigation"
+<header class="p-3 text-bg-dark">
+  <div class="container">
+    <div
+      class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
     >
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/dashboard">Dashboard</a>
+      <a
+        routerLink="/dashboard"
+        class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
+      >
+        <span class="fs-4 fw-bold">Classter</span>
+      </a>
+
+      <ul
+        class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
+      >
+        <li>
+          <a routerLink="/dashboard" class="nav-link px-2 text-white"
+            >Dashboard</a
+          >
         </li>
-        <li class="nav-item">
-          <a class="nav-link" routerLink="/login">Login</a>
+        <li>
+          <a routerLink="/courses" class="nav-link px-2 text-white">Courses</a>
+        </li>
+        <li>
+          <a routerLink="/assignments" class="nav-link px-2 text-white"
+            >Assignments</a
+          >
+        </li>
+        <li>
+          <a routerLink="/attendance" class="nav-link px-2 text-white"
+            >Attendance</a
+          >
         </li>
       </ul>
+
+      <!-- (Opțional: Când implementezi căutare) -->
+      <!--
+        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+          <input
+            type="search"
+            class="form-control form-control-dark text-bg-dark"
+            placeholder="Search..."
+            aria-label="Search"
+          />
+        </form>
+        -->
+
+      <div class="text-end">
+        <button
+          type="button"
+          class="btn btn-outline-light me-2"
+          routerLink="/login"
+        >
+          Login
+        </button>
+        <button type="button" class="btn btn-warning" routerLink="/register">
+          Register
+        </button>
+      </div>
     </div>
   </div>
-</nav>
+</header>
