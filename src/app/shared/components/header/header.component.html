@@ -13,37 +13,49 @@
       <ul
         class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
       >
-        <li>
-          <a routerLink="/dashboard" class="nav-link px-2 text-white"
-            >Dashboard</a
-          >
-        </li>
-        <li>
-          <a routerLink="/courses" class="nav-link px-2 text-white">Courses</a>
-        </li>
-        <li>
-          <a routerLink="/assignments" class="nav-link px-2 text-white"
-            >Assignments</a
-          >
-        </li>
-        <li>
-          <a routerLink="/attendance" class="nav-link px-2 text-white"
-            >Attendance</a
-          >
-        </li>
-      </ul>
+        <!-- STUDENT + TEACHER NAV -->
+        <ng-container *ngIf="role === 'student' || role === 'teacher'">
+          <li>
+            <a routerLink="/dashboard" class="nav-link px-2 text-white"
+              >Dashboard</a
+            >
+          </li>
+          <li>
+            <a routerLink="/courses" class="nav-link px-2 text-white"
+              >Courses</a
+            >
+          </li>
+          <li>
+            <a routerLink="/assignments" class="nav-link px-2 text-white"
+              >Assignments</a
+            >
+          </li>
+          <li>
+            <a routerLink="/attendance" class="nav-link px-2 text-white"
+              >Attendance</a
+            >
+          </li>
+        </ng-container>
 
-      <!-- (Opțional: Când implementezi căutare) -->
-      <!--
-        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
-          <input
-            type="search"
-            class="form-control form-control-dark text-bg-dark"
-            placeholder="Search..."
-            aria-label="Search"
-          />
-        </form>
-        -->
+        <!-- ADMIN NAV -->
+        <ng-container *ngIf="role === 'admin'">
+          <li>
+            <a routerLink="/admin" class="nav-link px-2 text-white"
+              >Admin Panel</a
+            >
+          </li>
+          <li>
+            <a routerLink="/admin/users" class="nav-link px-2 text-white"
+              >Manage Users</a
+            >
+          </li>
+          <li>
+            <a routerLink="/admin/reports" class="nav-link px-2 text-white"
+              >Reports</a
+            >
+          </li>
+        </ng-container>
+      </ul>
 
       <div class="text-end">
         <button

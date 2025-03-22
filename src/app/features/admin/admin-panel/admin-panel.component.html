@@ -1,0 +1,35 @@
+<div class="container py-4 text-white">
+  <h2 class="mb-4">Admin Panel – Create User</h2>
+
+  <form
+    [formGroup]="form"
+    (ngSubmit)="createUser()"
+    class="bg-dark p-4 rounded shadow"
+    style="max-width: 500px"
+  >
+    <div class="mb-3">
+      <label class="form-label">Full Name</label>
+      <input type="text" class="form-control" formControlName="fullName" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Email</label>
+      <input type="email" class="form-control" formControlName="email" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Password</label>
+      <input type="password" class="form-control" formControlName="password" />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Role</label>
+      <select class="form-select" formControlName="role">
+        <option value="student">Student</option>
+        <option value="teacher">Teacher</option>
+      </select>
+    </div>
+
+    <button type="submit" class="btn btn-warning w-100">Create User</button>
+  </form>
+</div>

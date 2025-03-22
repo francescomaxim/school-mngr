@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { inject, Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { BehaviorSubject } from 'rxjs';
 import {
@@ -12,18 +12,16 @@ import { User } from './models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  user = new BehaviorSubject<User | null>(null);
+  private auth = inject(Auth);
+  private db = inject(Database);
+  private router = inject(Router);
 
-  constructor(
-    private auth: Auth,
-    private db: Database,
-    private router: Router
-  ) {}
+  user = new BehaviorSubject<User | null>(null);
 
   signup(
     email: string,
     password: string,
-    role: 'admin' | 'teacher' | 'student',
+    role: 'teacher' | 'student',
     fullName: string
   ) {
     return createUserWithEmailAndPassword(this.auth, email, password).then(
@@ -48,7 +46,7 @@ export class AuthService {
             const user = new User(
               userData.email,
               uid,
-              '', // token if needed
+              '', // token (optional)
               new Date(),
               userData.role,
               userData.fullName
@@ -80,7 +78,7 @@ export class AuthService {
     const loadedUser = new User(
       userData.email,
       userData.id,
-      '', // token (opțional)
+      '', // token (optional)
       new Date(userData._tokenExpirationDate ?? new Date()),
       userData.role,
       userData.fullName

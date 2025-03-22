@@ -1,4 +1,6 @@
 <form
+  [formGroup]="form"
+  (ngSubmit)="login()"
   class="w-100 p-4 p-md-5 m-auto bg-dark text-white rounded shadow"
   style="max-width: 500px"
 >
@@ -41,3 +43,5 @@
 
   <p class="mt-4 text-white-50 text-center small">© 2025 Classter</p>
 </form>
+
+<app-error-message [message]="errorMessage"></app-error-message>
