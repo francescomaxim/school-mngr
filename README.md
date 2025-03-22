@@ -113,7 +113,7 @@ Component ➜ Action ➜ Effect ➜ Service (Firebase) ➜ Reducer ➜ Store ➜
 
 ```bash
 git clone https://github.com/francescomaxim/school-mngr.git
-cd classter
+cd school-mngr
 ```
 
 2. Install dependencies:
