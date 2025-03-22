@@ -28,6 +28,7 @@ export class LoginComponent {
     this.form = this.fb.group({
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
+      rememberMe: [false],
     });
   }
 
@@ -38,16 +39,19 @@ export class LoginComponent {
   login() {
     if (this.form.invalid) return;
 
-    const { email, password } = this.form.value;
-
-    console.log(email, password);
+    const { email, password, rememberMe } = this.form.value;
 
     this.auth
-      .login(email!, password!)
+      .login(email, password)
       .then((user) => {
-        const role = user.role;
+        this.errorMessage = null;
 
-        if (role === 'admin') {
+        // ✅ doar dacă e bifat "Remember me"
+        if (rememberMe) {
+          localStorage.setItem('userData', JSON.stringify(user));
+        }
+
+        if (user.role === 'admin') {
           this.router.navigate(['/adminpanel']);
         } else {
           this.router.navigate(['/']);
