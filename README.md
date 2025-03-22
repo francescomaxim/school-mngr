@@ -1,59 +1,162 @@
-# Classter
+# 📚 Classter - Smart School Management System
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.1.7.
+Classter is a modern web application developed with Angular and Firebase, designed to manage school activities for students and teachers, offering advanced artificial intelligence support and real-time functionalities.
 
-## Development server
+---
 
-To start a local development server, run:
+## ⚙️ Technologies Used
+
+- **Frontend:** Angular, NgRx, Angular Material / TailwindCSS / Bootstrap
+- **Backend:** Firebase Realtime Database, Authentication, Storage, Cloud Functions
+- **AI & OCR:** Gemini API (Summarization and Virtual Assistant), Google Vision API (OCR and image analysis)
+
+---
+
+## 🚀 Key Features
+
+### 🔒 Authentication & Authorization
+
+- Role-based authentication: **student**, **teacher**, **admin**
+- Firebase Authentication
+
+### 📖 Course Management
+
+- Create, edit, and delete courses
+- Course materials (documents, images)
+- Automatic/manual student enrollment
+
+### 📝 Assignment Management
+
+- Add and manage assignments and projects
+- Automated assignment submission and validation via OCR (Google Vision API)
+
+### 📅 Attendance Tracking
+
+- Intuitive attendance system
+- Excel report generation (ExcelService)
+
+### 📊 Reports & Statistics
+
+- Export and import academic data in Excel
+- Student and teacher performance analytics
+
+### 🤖 Integrated AI Assistant
+
+- Automatic course material summaries
+- Intelligent feedback for assignments and projects (Gemini API)
+- Integrated virtual assistant (chatbot)
+
+### 📲 Notifications
+
+- Real-time notifications for updates, grades, and deadlines
+- Firebase Cloud Messaging
+
+---
+
+## 🗂️ Project Structure
+
+```bash
+src
+├── app
+│   ├── core
+│   │   └── services (Firebase, Excel, Gemini, Vision)
+│   ├── modules
+│   │   ├── auth
+│   │   ├── dashboard
+│   │   ├── courses
+│   │   ├── assignments
+│   │   ├── attendance
+│   │   └── users
+│   ├── shared
+│   └── store (NgRx)
+│       ├── actions
+│       ├── reducers
+│       ├── effects
+│       └── selectors
+└── environments
+```
+
+---
+
+## 🔥 Firebase Realtime Database Structure
+
+```json
+classter
+├── users
+├── courses
+├── assignments
+├── attendance
+└── notifications
+```
+
+---
+
+## 🛠️ Specific Integrated Services
+
+- **ExcelService**: Generate and import academic data in Excel format
+- **GeminiService**: Automatic summaries, intelligent feedback, chatbot
+- **GoogleVisionService**: OCR and automatic document validation
+
+---
+
+## 🔄 Data Flow (NgRx)
+
+```plaintext
+Component ➜ Action ➜ Effect ➜ Service (Firebase) ➜ Reducer ➜ Store ➜ Selector ➜ Component
+```
+
+---
+
+## 📌 Installation and Local Development
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/francescomaxim/school-mngr.git
+cd classter
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Configure the environment.ts file:
+
+```typescript
+export const environment = {
+  firebaseConfig: {
+    apiKey: "",
+    authDomain: "",
+    databaseURL: "",
+    projectId: "",
+    storageBucket: "",
+    messagingSenderId: "",
+    appId: "",
+  },
+};
+```
+
+4. Run the application:
 
 ```bash
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+---
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+## 📦 Build and Deploy (Firebase Hosting)
 
 ```bash
-ng generate component component-name
+ng build --prod
+firebase deploy
 ```
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+---
 
-```bash
-ng generate --help
-```
+## 👨‍💻 Author
 
-## Building
+Built with ❤️ using Angular & Firebase
 
-To build the project run:
-
-```bash
-ng build
-```
-
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
-
-## Running unit tests
-
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
-
-```bash
-ng test
-```
-
-## Running end-to-end tests
-
-For end-to-end (e2e) testing, run:
-
-```bash
-ng e2e
-```
-
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
