@@ -6,13 +6,15 @@ Classter is a modern web application developed with Angular and Firebase, design
 
 ## ⚙️ Technologies Used
 
-- **Frontend:** Angular, NgRx, Angular Material / TailwindCSS / Bootstrap
+- **Frontend:** Angular, NgRx, Angular Material / TailwindCSS
 - **Backend:** Firebase Realtime Database, Authentication, Storage, Cloud Functions
 - **AI & OCR:** Gemini API (Summarization and Virtual Assistant), Google Vision API (OCR and image analysis)
 
 ---
 
 ## 🚀 Key Features
+
+🔗 **Live Demo:** [Classter App](https://console.firebase.google.com/project/classter-1ef21/overview)
 
 ### 🔒 Authentication & Authorization
 
@@ -112,8 +114,8 @@ Component ➜ Action ➜ Effect ➜ Service (Firebase) ➜ Reducer ➜ Store ➜
 1. Clone the repository:
 
 ```bash
-git clone https://github.com/francescomaxim/school-mngr.git
-cd school-mngr
+git clone https://github.com/username/classter.git
+cd classter
 ```
 
 2. Install dependencies:
