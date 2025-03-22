@@ -14,7 +14,7 @@ Classter is a modern web application developed with Angular and Firebase, design
 
 ## 🚀 Key Features
 
-🔗 **Live Demo:** [Classter App](https://console.firebase.google.com/project/classter-1ef21/overview)
+🔗 **Live Demo:** [Classter App](https://classter-1ef21.web.app)
 
 ### 🔒 Authentication & Authorization
 
