@@ -4,10 +4,10 @@
       class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
     >
       <a
-        routerLink="/dashboard"
+        (click)="goToHome()"
         class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
       >
-        <span class="fs-4 fw-bold">Classter</span>
+        <span class="fs-4 fw-bold name">Classter</span>
       </a>
 
       <ul
@@ -49,12 +49,12 @@
         <button
           type="button"
           class="btn btn-outline-light me-2"
-          routerLink="/login"
+          (click)="goToLogIn()"
         >
-          Login
+          Log In
         </button>
-        <button type="button" class="btn btn-warning" routerLink="/register">
-          Register
+        <button type="button" class="btn btn-warning" (click)="goToSignUp()">
+          Sign Up
         </button>
       </div>
     </div>
