@@ -11,10 +11,6 @@ export class RouterService {
     this.router.navigate(['/login']);
   }
 
-  goToSignUp() {
-    this.router.navigate(['/signup']);
-  }
-
   goToHome() {
     this.router.navigate(['']);
   }

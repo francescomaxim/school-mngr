@@ -1,120 +1,91 @@
-import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { BehaviorSubject, tap } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
+import {
+  Auth,
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword,
+  signOut,
+} from '@angular/fire/auth';
+import { Database, ref, set, get } from '@angular/fire/database';
 import { User } from './models/user.model';
-import { AuthResponseData } from './models/auth.model';
 
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable({ providedIn: 'root' })
 export class AuthService {
-  private apiKey = 'AIzaSyDmGuH_3Nb-RzBp0pS1xKA5wmYdbVNuruc';
   user = new BehaviorSubject<User | null>(null);
 
-  constructor(private http: HttpClient, private router: Router) {
-    this.autoLogin();
-  }
+  constructor(
+    private auth: Auth,
+    private db: Database,
+    private router: Router
+  ) {}
 
-  getId() {
-    return this.user.getValue()?.id;
-  }
-
-  signup(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${this.apiKey}`,
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        tap((response) => {
-          this.sendVerificationEmail(response.idToken).subscribe();
-        })
-      );
+  signup(
+    email: string,
+    password: string,
+    role: 'admin' | 'teacher' | 'student',
+    fullName: string
+  ) {
+    return createUserWithEmailAndPassword(this.auth, email, password).then(
+      (cred) => {
+        const uid = cred.user.uid;
+        return set(ref(this.db, 'users/' + uid), {
+          email,
+          fullName,
+          role,
+        });
+      }
+    );
   }
 
   login(email: string, password: string) {
-    return this.http
-      .post<AuthResponseData>(
-        `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${this.apiKey}`,
-        {
-          email: email,
-          password: password,
-          returnSecureToken: true,
-        }
-      )
-      .pipe(
-        tap((response) => {
-          this.handleAuthentication(
-            response.email,
-            response.localId,
-            response.idToken,
-            +response.expiresIn
-          );
-          this.router.navigate(['track']);
-        })
-      );
-  }
-
-  resetPassword(email: string) {
-    return this.http.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${this.apiKey}`,
-      {
-        requestType: 'PASSWORD_RESET',
-        email: email,
+    return signInWithEmailAndPassword(this.auth, email, password).then(
+      (cred) => {
+        const uid = cred.user.uid;
+        return get(ref(this.db, 'users/' + uid)).then((snapshot) => {
+          if (snapshot.exists()) {
+            const userData = snapshot.val();
+            const user = new User(
+              userData.email,
+              uid,
+              '', // token if needed
+              new Date(),
+              userData.role,
+              userData.fullName
+            );
+            this.user.next(user);
+            localStorage.setItem('userData', JSON.stringify(user));
+            return user;
+          } else {
+            throw new Error('User data not found in database.');
+          }
+        });
       }
     );
   }
 
   logout() {
-    this.user.next(null);
-    this.router.navigate(['/auth']);
-  }
-
-  sendVerificationEmail(idToken: string) {
-    return this.http.post(
-      `https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${this.apiKey}`,
-      {
-        requestType: 'VERIFY_EMAIL',
-        idToken,
-      }
-    );
-  }
-
-  private handleAuthentication(
-    email: string,
-    userId: string,
-    token: string,
-    expiresIn: number
-  ) {
-    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
-    const user = new User(email, userId, token, expirationDate);
-    this.user.next(user);
-    localStorage.setItem('userData', JSON.stringify(user)); // Store user in local storage
+    return signOut(this.auth).then(() => {
+      this.user.next(null);
+      localStorage.removeItem('userData');
+      this.router.navigate(['/login']);
+    });
   }
 
   autoLogin() {
-    const userData: {
-      email: string;
-      id: string;
-      _token: string;
-      _tokenExpirationDate: string;
-    } = JSON.parse(localStorage.getItem('userData')!);
-    if (!userData) {
-      return;
-    }
+    const userDataString = localStorage.getItem('userData');
+    if (!userDataString) return;
+
+    const userData = JSON.parse(userDataString);
     const loadedUser = new User(
       userData.email,
       userData.id,
-      userData._token,
-      new Date(userData._tokenExpirationDate)
+      '', // token (opțional)
+      new Date(userData._tokenExpirationDate ?? new Date()),
+      userData.role,
+      userData.fullName
     );
-    if (loadedUser.token) {
-      this.user.next(loadedUser);
-    }
+
+    this.user.next(loadedUser);
   }
 }

@@ -17,8 +17,4 @@ export class HeaderComponent {
   goToLogIn() {
     this.routerService.goToLogIn();
   }
-
-  goToSignUp() {
-    this.routerService.goToSignUp();
-  }
 }
