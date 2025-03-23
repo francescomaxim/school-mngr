@@ -16,21 +16,38 @@
         <!-- STUDENT NAV -->
         <ng-container *ngIf="role === 'student'">
           <li>
-            <a class="nav-link px-2 text-white">Dashboard</a>
+            <a
+              (click)="routerService.goToStudentDashBoard()"
+              class="nav-link px-2 text-white"
+              >Dashboard</a
+            >
           </li>
           <li>
-            <a routerLink="/courses" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToStudentCourses()"
+              class="nav-link px-2 text-white"
               >My Courses</a
             >
           </li>
           <li>
-            <a routerLink="/assignments" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToStudentAssigments()"
+              class="nav-link px-2 text-white"
               >My Assignments</a
             >
           </li>
           <li>
-            <a routerLink="/attendance" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToStudentAttendance()"
+              class="nav-link px-2 text-white"
               >Attendance</a
+            >
+          </li>
+          <li>
+            <a
+              (click)="routerService.goToStudentToDo()"
+              class="nav-link px-2 text-white"
+              >To Do's</a
             >
           </li>
         </ng-container>

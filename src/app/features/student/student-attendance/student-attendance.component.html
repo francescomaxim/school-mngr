@@ -1,0 +1,78 @@
+<div class="container my-5 text-white">
+  <h2 class="mb-4">📅 Situația Prezenței</h2>
+
+  <!-- Filtru după curs -->
+  <div class="mb-4">
+    <label for="courseFilter" class="form-label">Filtrează după curs:</label>
+    <select
+      id="courseFilter"
+      class="form-select bg-dark text-white border-secondary"
+      [(ngModel)]="selectedCourse"
+    >
+      <option value="">Toate cursurile</option>
+      <option *ngFor="let course of courses" [value]="course">
+        {{ course }}
+      </option>
+    </select>
+  </div>
+
+  <!-- Tabel prezențe -->
+  <div class="table-responsive bg-dark p-3 rounded shadow">
+    <table class="table table-dark table-bordered align-middle text-center">
+      <thead class="table-secondary text-dark">
+        <tr>
+          <th>Data</th>
+          <th>Curs</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let record of filteredAttendance()">
+          <td>{{ record.date | date : "dd MMM yyyy" }}</td>
+          <td>{{ record.course }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': record.status === 'Prezent',
+                'bg-danger': record.status === 'Absent',
+                'bg-warning text-dark': record.status === 'Motivat'
+              }"
+              >{{ record.status }}</span
+            >
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Empty State -->
+    <div
+      *ngIf="filteredAttendance().length === 0"
+      class="text-center text-white-50 mt-3"
+    >
+      Nu există înregistrări pentru cursul selectat.
+    </div>
+  </div>
+
+  <!-- Statistici -->
+  <div class="row mt-5">
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-4 text-center">
+        <h5>Prezență Totală</h5>
+        <p class="display-6 text-success">{{ getAttendanceRate() }}%</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-4 text-center">
+        <h5>Ore Absență</h5>
+        <p class="display-6 text-danger">{{ getAbsenceCount() }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-4 text-center">
+        <h5>Ore Motivate</h5>
+        <p class="display-6 text-warning">{{ getMotivatedCount() }}</p>
+      </div>
+    </div>
+  </div>
+</div>
