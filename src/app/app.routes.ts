@@ -7,6 +7,7 @@ import { ManageUsersComponent } from './features/admin/manage-users/manage-users
 import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard/teacher-dashboard.component';
 import { teacherGuard } from './core/authentication/guards/teacher.guard';
 import { TeacherManageCoursesComponent } from './features/teacher/teacher-manage-courses/teacher-manage-courses.component';
+import { TeacherAssigmentsComponent } from './features/teacher/teacher-assigments/teacher-assigments.component';
 
 export const routes: Routes = [
   {
@@ -32,6 +33,11 @@ export const routes: Routes = [
     path: 'teacher-manage-courses',
     canActivate: [teacherGuard],
     component: TeacherManageCoursesComponent,
+  },
+  {
+    path: 'teacher-assigments',
+    canActivate: [teacherGuard],
+    component: TeacherAssigmentsComponent,
   },
   {
     path: '**',
