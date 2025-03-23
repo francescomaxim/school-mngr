@@ -1,0 +1,32 @@
+/* Ajustări de spacing și culori */
+.card-title {
+  color: #fff;
+}
+
+.card-text {
+  color: #e0e0e0;
+}
+
+.table {
+  color: #fff;
+}
+
+.list-group-item {
+  border: none;
+  border-bottom: 1px solid #444;
+}
+
+.bg-secondary {
+  background-color: #444 !important;
+}
+
+/* Butoane shortcut */
+.btn-warning {
+  min-width: 180px;
+}
+
+@media (max-width: 768px) {
+  .btn-warning {
+    width: 100%;
+  }
+}

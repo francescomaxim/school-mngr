@@ -4,6 +4,8 @@ import { HeroComponent } from './shared/components/hero/hero.component';
 import { AdminPanelComponent } from './features/admin/admin-panel/admin-panel.component';
 import { adminGuard } from './core/authentication/guards/admin.guard';
 import { ManageUsersComponent } from './features/admin/manage-users/manage-users.component';
+import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard/teacher-dashboard.component';
+import { teacherGuard } from './core/authentication/guards/teacher.guard';
 
 export const routes: Routes = [
   {
@@ -17,8 +19,13 @@ export const routes: Routes = [
   },
   {
     path: 'manage-users',
-    component: ManageUsersComponent,
     canActivate: [adminGuard],
+    component: ManageUsersComponent,
+  },
+  {
+    path: 'teacher-dashboard',
+    canActivate: [teacherGuard],
+    component: TeacherDashboardComponent,
   },
   {
     path: '**',
