@@ -13,8 +13,8 @@
       <ul
         class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
       >
-        <!-- STUDENT + TEACHER NAV -->
-        <ng-container *ngIf="role === 'student' || role === 'teacher'">
+        <!-- STUDENT NAV -->
+        <ng-container *ngIf="role === 'student'">
           <li>
             <a routerLink="/dashboard" class="nav-link px-2 text-white"
               >Dashboard</a
@@ -22,17 +22,48 @@
           </li>
           <li>
             <a routerLink="/courses" class="nav-link px-2 text-white"
-              >Courses</a
+              >My Courses</a
             >
           </li>
           <li>
             <a routerLink="/assignments" class="nav-link px-2 text-white"
-              >Assignments</a
+              >My Assignments</a
             >
           </li>
           <li>
             <a routerLink="/attendance" class="nav-link px-2 text-white"
               >Attendance</a
+            >
+          </li>
+        </ng-container>
+
+        <!-- TEACHER NAV -->
+        <ng-container *ngIf="role === 'teacher'">
+          <li>
+            <a routerLink="/teacher-dashboard" class="nav-link px-2 text-white"
+              >Dashboard</a
+            >
+          </li>
+          <li>
+            <a routerLink="/manage-courses" class="nav-link px-2 text-white"
+              >Manage Courses</a
+            >
+          </li>
+          <li>
+            <a
+              routerLink="/teacher-assignments"
+              class="nav-link px-2 text-white"
+              >Assignments</a
+            >
+          </li>
+          <li>
+            <a routerLink="/teacher-attendance" class="nav-link px-2 text-white"
+              >Attendance</a
+            >
+          </li>
+          <li>
+            <a routerLink="/teacher-reports" class="nav-link px-2 text-white"
+              >Reports</a
             >
           </li>
         </ng-container>
@@ -57,6 +88,7 @@
         </ng-container>
       </ul>
 
+      <!-- Not logged in -->
       <div class="text-end" *ngIf="!user">
         <button
           type="button"
