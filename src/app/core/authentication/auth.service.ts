@@ -52,7 +52,6 @@ export class AuthService {
               userData.fullName
             );
             this.user.next(user);
-            localStorage.setItem('userData', JSON.stringify(user));
             return user;
           } else {
             throw new Error('User data not found in database.');
