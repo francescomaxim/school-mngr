@@ -70,6 +70,10 @@ export class AuthService {
   }
 
   autoLogin() {
+    if (typeof window === 'undefined' || typeof localStorage === 'undefined') {
+      return;
+    }
+
     const userDataString = localStorage.getItem('userData');
     if (!userDataString) return;
 

@@ -1,0 +1,47 @@
+<div class="container my-5 text-white">
+  <h2 class="mb-4">📌 Lista Ta de Task-uri</h2>
+
+  <!-- Form Adăugare Task -->
+  <form (ngSubmit)="addTask()" class="input-group mb-4">
+    <input
+      [(ngModel)]="newTask"
+      name="task"
+      class="form-control bg-dark text-white border-secondary"
+      placeholder="Scrie un nou task..."
+      required
+    />
+    <button type="submit" class="btn btn-warning">Adaugă</button>
+  </form>
+
+  <!-- Lista Task-uri -->
+  <ul class="list-group">
+    <li
+      class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center"
+      *ngFor="let task of tasks; let i = index"
+    >
+      <div>
+        <input
+          type="checkbox"
+          class="form-check-input me-2"
+          [checked]="task.completed"
+          (change)="toggleComplete(i)"
+        />
+        <span
+          [ngClass]="{
+            'text-decoration-line-through text-muted': task.completed
+          }"
+        >
+          {{ task.label }}
+        </span>
+      </div>
+      <button class="btn btn-sm btn-outline-danger" (click)="removeTask(i)">
+        🗑️
+      </button>
+    </li>
+  </ul>
+
+  <!-- Empty State -->
+  <div *ngIf="tasks.length === 0" class="text-white-50 mt-3 text-center">
+    Niciun task adăugat momentan.
+  </div>
+</div>

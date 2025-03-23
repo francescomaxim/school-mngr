@@ -1,0 +1,97 @@
+<div class="container my-5 text-white">
+  <!-- Bun venit -->
+  <div class="mb-4">
+    <h2>👋 Bun venit, {{ studentName }}!</h2>
+    <p class="text-white-50">Gata de o nouă zi de învățare?</p>
+  </div>
+
+  <!-- Cursuri active -->
+  <div class="row g-4 mb-5">
+    <div class="col-md-4" *ngFor="let course of courses">
+      <div class="card bg-secondary h-100 shadow">
+        <div class="card-body">
+          <h5 class="card-title">{{ course.title }}</h5>
+          <p class="card-text">
+            Teme restante: {{ course.assignments }}<br />
+            Prezență: {{ course.attendance }}
+          </p>
+          <button class="btn btn-warning w-100">Vezi Detalii</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Program + Prezență + To-Do -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4">
+      <h5>📆 Programul Zilei</h5>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-dark text-white-50">
+          10:00 - Programare
+        </li>
+        <li class="list-group-item bg-dark text-white-50">
+          12:00 - Matematică
+        </li>
+        <li class="list-group-item bg-dark text-white-50">14:00 - Algoritmi</li>
+      </ul>
+    </div>
+
+    <div class="col-md-4">
+      <h5>✅ Prezența</h5>
+      <div class="bg-secondary p-3 rounded text-center">
+        <p class="text-white-50 mb-1">Săptămâna aceasta</p>
+        <h4 class="text-white">87%</h4>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <h5>📌 To-Do</h5>
+      <ul class="list-group list-group-flush">
+        <li
+          class="list-group-item bg-dark text-white-50"
+          *ngFor="let task of toDoList"
+        >
+          {{ task }}
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Shortcut-uri -->
+  <div class="mb-4">
+    <h5>🔗 Acces Rapid</h5>
+    <div class="d-flex flex-wrap gap-3 mt-2">
+      <button class="btn btn-outline-light">📚 Cursurile Mele</button>
+      <button class="btn btn-outline-light">📝 Temele Mele</button>
+      <button class="btn btn-outline-light">📊 Prezență</button>
+      <button class="btn btn-outline-light">🏆 Note</button>
+    </div>
+  </div>
+
+  <!-- Placeholder grafic -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="bg-secondary p-4 rounded">
+        <h5 class="text-white">📈 Progresul Meu</h5>
+        <p class="text-white-50">[Grafic progres - Placeholder]</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="bg-secondary p-4 rounded">
+        <h5 class="text-white">📤 Teme trimise</h5>
+        <div class="progress">
+          <div
+            class="progress-bar bg-warning"
+            role="progressbar"
+            style="width: 60%"
+            aria-valuenow="60"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            60%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
