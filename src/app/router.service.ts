@@ -26,4 +26,21 @@ export class RouterService {
   goToReports() {
     this.router.navigate(['/reports']);
   }
+
+  goToTeacherDashBoard() {
+    console.log('cebas');
+    this.router.navigate(['/teacher-dashboard']);
+  }
+
+  goToTeacherManageCourses() {
+    this.router.navigate(['/teacher-manage-courses']);
+  }
+
+  goToTeacherAssigments() {
+    this.router.navigate(['/teacher-assigments']);
+  }
+
+  goToTeacherAttendance() {
+    this.router.navigate(['/teacher-attendance']);
+  }
 }

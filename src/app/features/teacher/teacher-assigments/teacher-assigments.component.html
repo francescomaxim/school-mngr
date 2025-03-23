@@ -1,0 +1,51 @@
+<div class="container my-5 text-white">
+  <!-- Header cu titlu și buton -->
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📚 Manage Assignments</h2>
+    <button class="btn btn-warning btn-sm">➕ Add New Assignment</button>
+  </div>
+
+  <!-- Tabel de teme -->
+  <div class="table-responsive bg-dark p-3 rounded shadow">
+    <table class="table table-dark table-bordered table-hover align-middle">
+      <thead>
+        <tr>
+          <th>Title</th>
+          <th>Course</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th class="text-center">Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let assignment of assignments">
+          <td>{{ assignment.title }}</td>
+          <td>{{ assignment.course }}</td>
+          <td>{{ assignment.dueDate | date : "mediumDate" }}</td>
+          <td>
+            <span
+              class="badge"
+              [ngClass]="{
+                'bg-success': assignment.status === 'Active',
+                'bg-secondary': assignment.status === 'Closed'
+              }"
+            >
+              {{ assignment.status }}
+            </span>
+          </td>
+          <td class="text-center">
+            <button class="btn btn-outline-light btn-sm me-1">Details</button>
+            <button class="btn btn-outline-primary btn-sm me-1">Edit</button>
+            <button class="btn btn-outline-danger btn-sm">Delete</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Zona de acțiuni rapide -->
+  <div class="d-flex gap-3 justify-content-end mt-4">
+    <button class="btn btn-outline-light btn-sm">📤 Export to CSV</button>
+    <button class="btn btn-outline-light btn-sm">📁 Import Assignments</button>
+  </div>
+</div>

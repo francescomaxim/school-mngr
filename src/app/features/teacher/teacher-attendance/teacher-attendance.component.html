@@ -1,0 +1,95 @@
+<div class="container my-5 text-white">
+  <div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="mb-0">📋 Manage Attendance</h2>
+    <div class="d-flex gap-2">
+      <select
+        class="form-select bg-dark text-white border-secondary"
+        [(ngModel)]="selectedCourse"
+      >
+        <option *ngFor="let course of courses" [value]="course">
+          {{ course }}
+        </option>
+      </select>
+
+      <input
+        type="date"
+        class="form-control bg-dark text-white border-secondary"
+        [(ngModel)]="selectedDate"
+      />
+    </div>
+  </div>
+
+  <!-- Student Attendance Table -->
+  <div class="table-responsive bg-dark rounded shadow p-3 mb-4">
+    <table class="table table-dark table-bordered table-hover">
+      <thead>
+        <tr>
+          <th>Student</th>
+          <th>Email</th>
+          <th>Status</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let student of students">
+          <td>{{ student.name }}</td>
+          <td>{{ student.email }}</td>
+          <td>
+            <select
+              class="form-select bg-secondary text-white"
+              [(ngModel)]="student.status"
+            >
+              <option value="Present">✅ Present</option>
+              <option value="Absent">❌ Absent</option>
+              <option value="Late">⏰ Late</option>
+              <option value="Excused">📝 Excused</option>
+            </select>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Actions -->
+  <div class="d-flex justify-content-between mb-4">
+    <div class="d-flex gap-2">
+      <button class="btn btn-warning" (click)="saveAttendance()">
+        💾 Save
+      </button>
+      <button class="btn btn-outline-light" (click)="loadAttendance()">
+        📤 Load
+      </button>
+      <button class="btn btn-outline-danger" (click)="resetAttendance()">
+        ♻️ Reset
+      </button>
+    </div>
+
+    <input
+      type="text"
+      class="form-control w-25 bg-dark text-white border-secondary"
+      placeholder="🔍 Filter by name"
+      [(ngModel)]="filterText"
+    />
+  </div>
+
+  <!-- Attendance Stats -->
+  <div class="row">
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-3 text-center">
+        <h6 class="text-white">Total Students</h6>
+        <p class="display-6">{{ students.length }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-3 text-center">
+        <h6 class="text-white">✅ Present</h6>
+        <p class="display-6 text-success">{{ countStatus("Present") }}</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="bg-secondary rounded p-3 text-center">
+        <h6 class="text-white">❌ Absent</h6>
+        <p class="display-6 text-danger">{{ countStatus("Absent") }}</p>
+      </div>
+    </div>
+  </div>
+</div>

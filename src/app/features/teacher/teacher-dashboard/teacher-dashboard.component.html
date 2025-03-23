@@ -1,0 +1,106 @@
+<div class="container my-5 text-white">
+  <!-- Welcome Section -->
+  <div class="mb-4">
+    <h2>👋 Bun venit, Prof. Ion Popescu!</h2>
+    <p class="text-white-50">
+      Aveți 3 cursuri active. Succes în gestionarea clasei!
+    </p>
+  </div>
+
+  <!-- Cards cu Cursuri -->
+  <div class="row g-4 mb-4">
+    <div class="col-md-4" *ngFor="let course of courses">
+      <div class="card bg-secondary h-100">
+        <div class="card-body">
+          <h5 class="card-title">{{ course.title }}</h5>
+          <p class="card-text">Studenți: {{ course.studentCount }}</p>
+          <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-light btn-sm">Detalii</button>
+            <button class="btn btn-outline-light btn-sm">Adaugă Temă</button>
+            <button class="btn btn-outline-light btn-sm">Prezență</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Ultimele Activități -->
+  <div class="mb-4">
+    <h4 class="mb-3">🕒 Ultimele Activități</h4>
+    <ul class="list-group list-group-flush">
+      <li class="list-group-item bg-dark text-white-50">
+        ✅ Tema adăugată la cursul „Programare”
+      </li>
+      <li class="list-group-item bg-dark text-white-50">
+        📅 Prezența marcată la cursul „Matematică”
+      </li>
+      <li class="list-group-item bg-dark text-white-50">
+        📤 Studentul Andrei a trimis tema la „Algoritmi”
+      </li>
+    </ul>
+  </div>
+
+  <!-- To Do + Calendar -->
+  <div class="row mb-4">
+    <div class="col-md-6">
+      <h4 class="mb-3">📌 To Do</h4>
+      <ul class="list-group list-group-flush">
+        <li class="list-group-item bg-dark text-white-50">
+          📅 Curs azi: Programare - 10:00
+        </li>
+        <li class="list-group-item bg-dark text-white-50">
+          📝 Corectează tema la Matematică
+        </li>
+        <li class="list-group-item bg-dark text-white-50">
+          ✅ Marchează prezența la Algoritmi
+        </li>
+      </ul>
+    </div>
+    <div class="col-md-6">
+      <h4 class="mb-3">📆 Calendar (dummy)</h4>
+      <div class="bg-secondary p-3 rounded text-center">
+        <p class="text-white-50">
+          Aici poți insera un calendar sau o listă de evenimente.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shortcut-uri -->
+  <div class="mb-5">
+    <h4 class="mb-3">🔗 Acces Rapid</h4>
+    <div class="d-flex flex-wrap gap-3">
+      <button class="btn btn-warning">📚 Gestiune Cursuri</button>
+      <button class="btn btn-warning">📝 Gestiune Teme</button>
+      <button class="btn btn-warning">📊 Rapoarte</button>
+      <button class="btn btn-warning">✅ Prezență</button>
+    </div>
+  </div>
+
+  <!-- Charts + Insights (placeholder) -->
+  <div class="row">
+    <div class="col-md-6">
+      <div class="bg-secondary p-4 rounded">
+        <h5 class="text-white">📈 Prezență Săptămânală</h5>
+        <p class="text-white-50">[Grafic placeholder]</p>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="bg-secondary p-4 rounded">
+        <h5 class="text-white">📤 Teme predate</h5>
+        <div class="progress">
+          <div
+            class="progress-bar bg-warning"
+            role="progressbar"
+            style="width: 75%"
+            aria-valuenow="75"
+            aria-valuemin="0"
+            aria-valuemax="100"
+          >
+            75%
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
