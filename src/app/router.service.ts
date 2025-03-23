@@ -14,4 +14,16 @@ export class RouterService {
   goToHome() {
     this.router.navigate(['']);
   }
+
+  goToAdminPanel() {
+    this.router.navigate(['/adminpanel']);
+  }
+
+  goToManageUsers() {
+    this.router.navigate(['/manage-users']);
+  }
+
+  goToReports() {
+    this.router.navigate(['/reports']);
+  }
 }
