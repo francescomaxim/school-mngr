@@ -14,6 +14,7 @@ import { StudentCoursesComponent } from './features/student/student-courses/stud
 import { StudentAssigmentsComponent } from './features/student/student-assigments/student-assigments.component';
 import { StudentAttendanceComponent } from './features/student/student-attendance/student-attendance.component';
 import { StudentTodoComponent } from './features/student/student-todo/student-todo.component';
+import { studentGuard } from './core/authentication/guards/student.guard';
 
 export const routes: Routes = [
   {
@@ -52,27 +53,27 @@ export const routes: Routes = [
   },
   {
     path: 'student-dashboard',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentDashboardComponent,
   },
   {
     path: 'student-courses',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentCoursesComponent,
   },
   {
     path: 'student-assigments',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentAssigmentsComponent,
   },
   {
     path: 'student-attendance',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentAttendanceComponent,
   },
   {
     path: 'student-todo',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentTodoComponent,
   },
   {
