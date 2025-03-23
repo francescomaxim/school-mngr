@@ -6,6 +6,7 @@ import { adminGuard } from './core/authentication/guards/admin.guard';
 import { ManageUsersComponent } from './features/admin/manage-users/manage-users.component';
 import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard/teacher-dashboard.component';
 import { teacherGuard } from './core/authentication/guards/teacher.guard';
+import { TeacherManageCoursesComponent } from './features/teacher/teacher-manage-courses/teacher-manage-courses.component';
 
 export const routes: Routes = [
   {
@@ -26,6 +27,11 @@ export const routes: Routes = [
     path: 'teacher-dashboard',
     canActivate: [teacherGuard],
     component: TeacherDashboardComponent,
+  },
+  {
+    path: 'teacher-manage-courses',
+    canActivate: [teacherGuard],
+    component: TeacherManageCoursesComponent,
   },
   {
     path: '**',
