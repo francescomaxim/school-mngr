@@ -12,27 +12,7 @@ import { User } from '../../../core/authentication/models/user.model';
 })
 export class HeaderComponent {
   //routing
-  private routerService = inject(RouterService);
-
-  goToHome() {
-    this.routerService.goToHome();
-  }
-
-  goToLogIn() {
-    this.routerService.goToLogIn();
-  }
-
-  goToAdminPanel() {
-    this.routerService.goToAdminPanel();
-  }
-
-  goToManageUsers() {
-    this.routerService.goToManageUsers();
-  }
-
-  goToReports() {
-    this.routerService.goToReports();
-  }
+  routerService = inject(RouterService);
 
   //autority
 

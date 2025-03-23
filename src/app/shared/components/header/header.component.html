@@ -4,7 +4,7 @@
       class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start"
     >
       <a
-        (click)="goToHome()"
+        (click)="routerService.goToHome()"
         class="d-flex align-items-center mb-2 mb-lg-0 text-white text-decoration-none"
       >
         <span class="fs-4 fw-bold name">Classter</span>
@@ -16,9 +16,7 @@
         <!-- STUDENT NAV -->
         <ng-container *ngIf="role === 'student'">
           <li>
-            <a routerLink="/dashboard" class="nav-link px-2 text-white"
-              >Dashboard</a
-            >
+            <a class="nav-link px-2 text-white">Dashboard</a>
           </li>
           <li>
             <a routerLink="/courses" class="nav-link px-2 text-white"
@@ -40,24 +38,30 @@
         <!-- TEACHER NAV -->
         <ng-container *ngIf="role === 'teacher'">
           <li>
-            <a routerLink="/teacher-dashboard" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToTeacherDashBoard()"
+              class="nav-link px-2 text-white"
               >Dashboard</a
             >
           </li>
           <li>
-            <a routerLink="/manage-courses" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToTeacherManageCourses()"
+              class="nav-link px-2 text-white"
               >Manage Courses</a
             >
           </li>
           <li>
             <a
-              routerLink="/teacher-assignments"
+              (click)="routerService.goToTeacherAssigments()"
               class="nav-link px-2 text-white"
               >Assignments</a
             >
           </li>
           <li>
-            <a routerLink="/teacher-attendance" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToTeacherAttendance()"
+              class="nav-link px-2 text-white"
               >Attendance</a
             >
           </li>
@@ -71,17 +75,23 @@
         <!-- ADMIN NAV -->
         <ng-container *ngIf="role === 'admin'">
           <li>
-            <a (click)="goToAdminPanel()" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToAdminPanel()"
+              class="nav-link px-2 text-white"
               >Admin Panel</a
             >
           </li>
           <li>
-            <a (click)="goToManageUsers()" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToManageUsers()"
+              class="nav-link px-2 text-white"
               >Manage Users</a
             >
           </li>
           <li>
-            <a (click)="goToReports()" class="nav-link px-2 text-white"
+            <a
+              (click)="routerService.goToReports()"
+              class="nav-link px-2 text-white"
               >Reports</a
             >
           </li>
@@ -93,7 +103,7 @@
         <button
           type="button"
           class="btn btn-outline-light me-2"
-          (click)="goToLogIn()"
+          (click)="routerService.goToLogIn()"
         >
           Log In
         </button>
