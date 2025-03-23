@@ -8,6 +8,7 @@ import { TeacherDashboardComponent } from './features/teacher/teacher-dashboard/
 import { teacherGuard } from './core/authentication/guards/teacher.guard';
 import { TeacherManageCoursesComponent } from './features/teacher/teacher-manage-courses/teacher-manage-courses.component';
 import { TeacherAssigmentsComponent } from './features/teacher/teacher-assigments/teacher-assigments.component';
+import { TeacherAttendanceComponent } from './features/teacher/teacher-attendance/teacher-attendance.component';
 
 export const routes: Routes = [
   {
@@ -38,6 +39,11 @@ export const routes: Routes = [
     path: 'teacher-assigments',
     canActivate: [teacherGuard],
     component: TeacherAssigmentsComponent,
+  },
+  {
+    path: 'teacher-attendance',
+    canActivate: [teacherGuard],
+    component: TeacherAttendanceComponent,
   },
   {
     path: '**',
