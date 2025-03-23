@@ -28,7 +28,6 @@ export class RouterService {
   }
 
   goToTeacherDashBoard() {
-    console.log('cebas');
     this.router.navigate(['/teacher-dashboard']);
   }
 
@@ -42,5 +41,25 @@ export class RouterService {
 
   goToTeacherAttendance() {
     this.router.navigate(['/teacher-attendance']);
+  }
+
+  goToStudentCourses() {
+    this.router.navigate(['/student-courses']);
+  }
+
+  goToStudentAssigments() {
+    this.router.navigate(['/student-assigments']);
+  }
+
+  goToStudentAttendance() {
+    this.router.navigate(['/student-attendance']);
+  }
+
+  goToStudentToDo() {
+    this.router.navigate(['/student-todo']);
+  }
+
+  goToStudentDashBoard() {
+    this.router.navigate(['/student-dashboard']);
   }
 }
