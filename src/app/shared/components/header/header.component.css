@@ -1,4 +1,5 @@
 .name {
+  color: #ffc107 !important; /* sau orice culoare vrei tu (galben Bootstrap) */
   cursor: pointer;
 }
 
