@@ -14,7 +14,7 @@
         class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0"
       >
         <!-- STUDENT NAV -->
-        <ng-container *ngIf="role === 'student'">
+        <ng-container *ngIf="(role$ | async) === 'student'">
           <li>
             <a
               (click)="routerService.goToStudentDashBoard()"
@@ -53,7 +53,7 @@
         </ng-container>
 
         <!-- TEACHER NAV -->
-        <ng-container *ngIf="role === 'teacher'">
+        <ng-container *ngIf="(role$ | async) === 'teacher'">
           <li>
             <a
               (click)="routerService.goToTeacherDashBoard()"
@@ -90,7 +90,7 @@
         </ng-container>
 
         <!-- ADMIN NAV -->
-        <ng-container *ngIf="role === 'admin'">
+        <ng-container *ngIf="(role$ | async) === 'admin'">
           <li>
             <a
               (click)="routerService.goToAdminPanel()"
@@ -116,7 +116,7 @@
       </ul>
 
       <!-- Not logged in -->
-      <div class="text-end" *ngIf="!user">
+      <div class="text-end" *ngIf="!(role$ | async)">
         <button
           type="button"
           class="btn btn-outline-light me-2"
@@ -127,7 +127,7 @@
       </div>
 
       <!-- Logged-in user dropdown -->
-      <div class="dropdown text-end" *ngIf="user">
+      <div class="dropdown text-end" *ngIf="role$ | async">
         <a
           href="#"
           class="d-block link-body-emphasis text-decoration-none dropdown-toggle"

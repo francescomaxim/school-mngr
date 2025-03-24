@@ -9,12 +9,16 @@ import {
 } from '@angular/fire/auth';
 import { Database, ref, set, get } from '@angular/fire/database';
 import { User } from './models/user.model';
+import { Store } from '@ngrx/store';
+import { login, logout } from '../../stores/auth-store/auth.actions';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private auth = inject(Auth);
   private db = inject(Database);
   private router = inject(Router);
+
+  private store = inject(Store);
 
   user = new BehaviorSubject<User | null>(null);
 
@@ -52,6 +56,7 @@ export class AuthService {
               userData.fullName
             );
             this.user.next(user);
+            this.store.dispatch(login({ user: user }));
             return user;
           } else {
             throw new Error('User data not found in database.');
@@ -66,6 +71,7 @@ export class AuthService {
       this.user.next(null);
       localStorage.removeItem('userData');
       this.router.navigate(['/login']);
+      this.store.dispatch(logout());
     });
   }
 
