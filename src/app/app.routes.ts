@@ -14,6 +14,9 @@ import { StudentCoursesComponent } from './features/student/student-courses/stud
 import { StudentAssigmentsComponent } from './features/student/student-assigments/student-assigments.component';
 import { StudentAttendanceComponent } from './features/student/student-attendance/student-attendance.component';
 import { StudentTodoComponent } from './features/student/student-todo/student-todo.component';
+import { adminGuard } from './core/authentication/guards/admin.guard';
+import { teacherGuard } from './core/authentication/guards/teacher.guard';
+import { studentGuard } from './core/authentication/guards/student.guard';
 // import { studentGuard } from './core/authentication/guards/student.guard';
 
 export const routes: Routes = [
@@ -23,57 +26,57 @@ export const routes: Routes = [
   },
   {
     path: 'adminpanel',
-    canActivate: [],
+    canActivate: [adminGuard],
     component: AdminPanelComponent,
   },
   {
     path: 'manage-users',
-    canActivate: [],
+    canActivate: [adminGuard],
     component: ManageUsersComponent,
   },
   {
     path: 'teacher-dashboard',
-    canActivate: [],
+    canActivate: [teacherGuard],
     component: TeacherDashboardComponent,
   },
   {
     path: 'teacher-manage-courses',
-    canActivate: [],
+    canActivate: [teacherGuard],
     component: TeacherManageCoursesComponent,
   },
   {
     path: 'teacher-assigments',
-    canActivate: [],
+    canActivate: [teacherGuard],
     component: TeacherAssigmentsComponent,
   },
   {
     path: 'teacher-attendance',
-    canActivate: [],
+    canActivate: [teacherGuard],
     component: TeacherAttendanceComponent,
   },
   {
     path: 'student-dashboard',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentDashboardComponent,
   },
   {
     path: 'student-courses',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentCoursesComponent,
   },
   {
     path: 'student-assigments',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentAssigmentsComponent,
   },
   {
     path: 'student-attendance',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentAttendanceComponent,
   },
   {
     path: 'student-todo',
-    canActivate: [],
+    canActivate: [studentGuard],
     component: StudentTodoComponent,
   },
   {

@@ -1,26 +1,31 @@
-// import { inject, Injectable } from '@angular/core';
-// import {
-//   CanActivateFn,
-//   Router,
-//   ActivatedRouteSnapshot,
-//   RouterStateSnapshot,
-// } from '@angular/router';
-// import { AuthService } from '../auth.service';
+import { inject } from '@angular/core';
+import {
+  CanActivateFn,
+  Router,
+  ActivatedRouteSnapshot,
+  RouterStateSnapshot,
+} from '@angular/router';
+import { Store } from '@ngrx/store';
+import { map, take, filter } from 'rxjs/operators';
+import { selectUser } from '../../../stores/auth-store/auth.selectors';
 
-// export const adminGuard: CanActivateFn = (
-//   route: ActivatedRouteSnapshot,
-//   state: RouterStateSnapshot
-// ) => {
-//   const authService = inject(AuthService);
-//   const router = inject(Router);
+export const adminGuard: CanActivateFn = (
+  route: ActivatedRouteSnapshot,
+  state: RouterStateSnapshot
+) => {
+  const store = inject(Store);
+  const router = inject(Router);
 
-//   const user = authService.user.getValue();
-
-//   if (user && user.role === 'admin') {
-//     return true;
-//   }
-
-//   // Redirect dacă nu e admin
-//   router.navigate(['/login']);
-//   return false;
-// };
+  return store.select(selectUser).pipe(
+    filter((user) => user !== undefined),
+    take(1),
+    map((user) => {
+      if (user?.role === 'admin') {
+        return true;
+      } else {
+        router.navigate(['/login']);
+        return false;
+      }
+    })
+  );
+};

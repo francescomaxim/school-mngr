@@ -42,14 +42,9 @@ export class LoginComponent {
     const { email, password, rememberMe } = this.form.value;
 
     this.auth
-      .login(email, password)
+      .login(email, password, rememberMe)
       .then((user) => {
         this.errorMessage = null;
-
-        // ✅ doar dacă e bifat "Remember me"
-        if (rememberMe) {
-          localStorage.setItem('userData', JSON.stringify(user));
-        }
 
         if (user.role === 'admin') {
           this.router.navigate(['/adminpanel']);
