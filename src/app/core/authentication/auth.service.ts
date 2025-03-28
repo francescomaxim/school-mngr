@@ -20,8 +20,6 @@ export class AuthService {
 
   private store = inject(Store);
 
-  user = new BehaviorSubject<User | null>(null);
-
   signup(
     email: string,
     password: string,
@@ -40,7 +38,7 @@ export class AuthService {
     );
   }
 
-  login(email: string, password: string) {
+  login(email: string, password: string, rememberMe: boolean) {
     return signInWithEmailAndPassword(this.auth, email, password).then(
       (cred) => {
         const uid = cred.user.uid;
@@ -55,8 +53,13 @@ export class AuthService {
               userData.role,
               userData.fullName
             );
-            this.user.next(user);
-            this.store.dispatch(login({ user: user }));
+
+            if (rememberMe) {
+              localStorage.setItem('userData', JSON.stringify(user));
+            }
+
+            this.store.dispatch(login({ user }));
+
             return user;
           } else {
             throw new Error('User data not found in database.');
@@ -68,9 +71,8 @@ export class AuthService {
 
   logout() {
     return signOut(this.auth).then(() => {
-      this.user.next(null);
-      localStorage.removeItem('userData');
       this.router.navigate(['/login']);
+      localStorage.removeItem('userData');
       this.store.dispatch(logout());
     });
   }
@@ -92,7 +94,6 @@ export class AuthService {
       userData.role,
       userData.fullName
     );
-
-    this.user.next(loadedUser);
+    this.store.dispatch(login({ user: loadedUser }));
   }
 }
