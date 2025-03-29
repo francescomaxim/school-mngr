@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
@@ -7,6 +7,7 @@ import {
   FormGroup,
 } from '@angular/forms';
 import { AuthService } from '../../../core/authentication/auth.service';
+import { AdminPanelService } from './admin-panel.service';
 
 @Component({
   selector: 'app-admin-panel',
@@ -15,9 +16,11 @@ import { AuthService } from '../../../core/authentication/auth.service';
   styleUrl: './admin-panel.component.css',
 })
 export class AdminPanelComponent {
+  private fb = inject(FormBuilder);
+  private adminPanelService = inject(AdminPanelService);
   form: FormGroup;
 
-  constructor(private fb: FormBuilder, private auth: AuthService) {
+  constructor() {
     this.form = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
@@ -29,17 +32,12 @@ export class AdminPanelComponent {
   createUser() {
     if (this.form.invalid) return;
 
-    const { fullName, email, password, role } = this.form.value;
-
-    this.auth
-      .signup(email!, password!, role as 'student' | 'teacher', fullName!)
-      .then(() => {
-        this.form.reset({ role: 'student' });
-        alert('User created successfully ✅');
-      })
-      .catch((err) => {
-        console.error(err);
-        alert('Something went wrong ❌');
-      });
+    const user: {
+      fullName: string;
+      email: string;
+      password: string;
+      role: 'teacher' | 'student';
+    } = this.form.value;
+    this.adminPanelService.createUser(user);
   }
 }
