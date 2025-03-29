@@ -17,5 +17,5 @@ export interface AppUser {
   id: string;
   email: string;
   fullName: string;
-  role: 'admin' | 'teacher' | 'student';
+  role: 'teacher' | 'student';
 }

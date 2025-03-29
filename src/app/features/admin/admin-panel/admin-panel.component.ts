@@ -25,7 +25,7 @@ export class AdminPanelComponent {
     this.form = this.fb.group({
       fullName: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', Validators.required],
+      password: ['', [Validators.required, Validators.minLength(6)]],
       role: ['student', Validators.required],
     });
   }

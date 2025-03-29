@@ -18,14 +18,14 @@ export class ManageUsersComponent implements OnInit {
 
   editingUser: AppUser | null = null;
   updatedFullName = '';
-  updatedRole: 'admin' | 'teacher' | 'student' = 'student';
+  updatedRole: 'teacher' | 'student' = 'student';
 
   ngOnInit(): void {
     this.manageUsersService.getAllUsers();
   }
 
   onEdit(user: AppUser): void {
-    this.editingUser = { ...user };
+    this.editingUser = user;
     this.updatedFullName = user.fullName;
     this.updatedRole = user.role;
   }
@@ -33,7 +33,7 @@ export class ManageUsersComponent implements OnInit {
   onSaveEdit(): void {
     if (!this.editingUser) return;
 
-    const updatedUser: Partial<User> = {
+    const updatedUser: Partial<AppUser> = {
       fullName: this.updatedFullName,
       role: this.updatedRole,
     };
