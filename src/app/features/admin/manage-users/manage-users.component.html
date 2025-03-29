@@ -15,15 +15,23 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let user of users">
+        <tr *ngFor="let user of users()">
           <td>{{ user.email }}</td>
           <td>{{ user.fullName }}</td>
           <td>{{ user.role }}</td>
           <td class="d-flex">
-            <button class="btn btn-sm btn-warning me-2" style="width: 80px">
+            <button
+              class="btn btn-sm btn-warning me-2"
+              style="width: 80px"
+              (click)="onEdit(user)"
+            >
               Edit
             </button>
-            <button class="btn btn-sm btn-danger" style="width: 80px">
+            <button
+              class="btn btn-sm btn-danger"
+              style="width: 80px"
+              (click)="onRemove(user)"
+            >
               Delete
             </button>
           </td>

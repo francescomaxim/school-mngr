@@ -1,55 +1,44 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { Database, get, ref } from '@angular/fire/database';
-import { ExcelService } from '../../../shared/services/excel.service';
-import { PdfService } from '../../../shared/services/pdf.service';
+import { Component, OnInit, inject } from '@angular/core';
 import { ManageUsersService } from './manage-users.service';
+import { UserService } from '../../../core/services/user.service';
+import { User } from '../../../core/authentication/models/user.model';
 
 @Component({
   selector: 'app-manage-users',
+  standalone: true,
   imports: [CommonModule],
   templateUrl: './manage-users.component.html',
   styleUrl: './manage-users.component.css',
 })
-export class ManageUsersComponent {
+export class ManageUsersComponent implements OnInit {
   private manageUsersService = inject(ManageUsersService);
-  private db = inject(Database);
-  users: any[] = [];
 
-  ngOnInit() {
-    const usersRef = ref(this.db, 'users');
-    get(usersRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        this.users = Object.values(data); // convertim obiectul într-un array
-      }
-    });
+  users = this.manageUsersService.users;
+
+  ngOnInit(): void {
+    this.manageUsersService.getAllUsers();
   }
 
-  onEdit(user: any) {
-    // TODO: Deschide un modal sau redirecționează către form de editare
+  onEdit(user: User): void {
     console.log('Edit user:', user);
+    // TODO: implementare modal/form editare
   }
 
-  onRemove(user: any) {
-    const confirmed = confirm(
-      `Are you sure you want to remove ${user.fullName}?`
-    );
-    if (confirmed) {
-      // TODO: apel spre service pentru remove
-      console.log('Removing user:', user);
-    }
+  onRemove(user: User): void {
+    console.log('Remove user:', user);
+    //TODO: implementare modal/form stergere
   }
 
-  exportUsers() {
-    this.manageUsersService.exportUsers(this.users);
+  exportUsers(): void {
+    this.manageUsersService.exportUsers(this.users());
   }
 
-  exportEmails() {
-    this.manageUsersService.exportEmails(this.users);
+  exportEmails(): void {
+    this.manageUsersService.exportEmails(this.users());
   }
 
-  generatePDFReport() {
-    this.manageUsersService.generatePDFReport(this.users);
+  generatePDFReport(): void {
+    this.manageUsersService.generatePDFReport(this.users());
   }
 }

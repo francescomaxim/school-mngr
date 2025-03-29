@@ -1,11 +1,14 @@
-import { inject, Injectable } from '@angular/core';
+import { inject, Injectable, signal } from '@angular/core';
 import { ExcelService } from '../../../shared/services/excel.service';
 import { PdfService } from '../../../shared/services/pdf.service';
+import { UserService } from '../../../core/services/user.service';
+import { User } from '../../../core/authentication/models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ManageUsersService {
+  // pdf and excel services
   private excelService = inject(ExcelService);
   private pdfService = inject(PdfService);
 
@@ -37,5 +40,16 @@ export class ManageUsersService {
   }
   generatePDFReport(users: any[]) {
     this.pdfService.generateUsersReport(users);
+  }
+
+  // user service
+
+  private userService = inject(UserService);
+  users = signal<User[]>([]);
+
+  getAllUsers() {
+    this.userService.getAllUsers().subscribe((users) => {
+      this.users.set(users);
+    });
   }
 }
