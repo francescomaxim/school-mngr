@@ -2,7 +2,7 @@ import { Component, inject } from '@angular/core';
 import { RouterService } from '../../../router.service';
 import { AuthService } from '../../../core/authentication/auth.service';
 import { AsyncPipe, CommonModule } from '@angular/common';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
 import { selectRole } from '../../../stores/auth-store/auth.selectors';
 

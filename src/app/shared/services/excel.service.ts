@@ -1,7 +1,13 @@
 import { Injectable } from '@angular/core';
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
-import { ExcelSheetConfig } from './excel.model';
+
+export interface ExcelSheetConfig<T extends object> {
+  sheetName: string;
+  data: T[];
+  title?: string;
+  protectSheet?: boolean;
+}
 
 @Injectable({
   providedIn: 'root',

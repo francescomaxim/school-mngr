@@ -1,74 +1,64 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
-import { Database, get, ref } from '@angular/fire/database';
-import { ExcelService } from '../../../core/excel/excel.service';
-import { PdfService } from '../../../core/pdf/pdf.service';
+import { Component, OnInit, inject } from '@angular/core';
+import { ManageUsersService } from './manage-users.service';
+import { AppUser, User } from '../../../core/authentication/models/user.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-users',
-  imports: [CommonModule],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './manage-users.component.html',
   styleUrl: './manage-users.component.css',
 })
-export class ManageUsersComponent {
-  private excelService = inject(ExcelService);
-  private pdfService = inject(PdfService);
-  private db = inject(Database);
-  users: any[] = [];
+export class ManageUsersComponent implements OnInit {
+  private manageUsersService = inject(ManageUsersService);
 
-  ngOnInit() {
-    const usersRef = ref(this.db, 'users');
-    get(usersRef).then((snapshot) => {
-      if (snapshot.exists()) {
-        const data = snapshot.val();
-        this.users = Object.values(data); // convertim obiectul într-un array
-      }
-    });
+  users = this.manageUsersService.users;
+
+  editingUser: AppUser | null = null;
+  updatedFullName = '';
+  updatedRole: 'teacher' | 'student' = 'student';
+
+  ngOnInit(): void {
+    this.manageUsersService.getAllUsers();
   }
 
-  onEdit(user: any) {
-    // TODO: Deschide un modal sau redirecționează către form de editare
-    console.log('Edit user:', user);
+  onEdit(user: AppUser): void {
+    this.editingUser = user;
+    this.updatedFullName = user.fullName;
+    this.updatedRole = user.role;
   }
 
-  onRemove(user: any) {
-    const confirmed = confirm(
-      `Are you sure you want to remove ${user.fullName}?`
-    );
-    if (confirmed) {
-      // TODO: apel spre service pentru remove
-      console.log('Removing user:', user);
-    }
+  onSaveEdit(): void {
+    if (!this.editingUser) return;
+
+    const updatedUser: Partial<AppUser> = {
+      fullName: this.updatedFullName,
+      role: this.updatedRole,
+    };
+
+    this.manageUsersService
+      .updateUser(this.editingUser.id, updatedUser)
+      .then(() => {
+        this.editingUser = null;
+        this.manageUsersService.getAllUsers(); // Refresh
+      });
   }
 
-  exportUsers() {
-    this.excelService.exportMultipleSheets(
-      [
-        {
-          sheetName: 'Users',
-          title: '📋 All Users in Classter',
-          data: this.users,
-        },
-      ],
-      'classter-users'
-    );
+  cancelEdit(): void {
+    this.editingUser = null;
   }
 
-  exportEmails() {
-    const emailsData = this.users.map((u) => ({ Email: u.email }));
-    this.excelService.exportMultipleSheets(
-      [
-        {
-          sheetName: 'Emails',
-          title: '📧 Email List',
-          data: emailsData,
-        },
-      ],
-      'classter-user-emails'
-    );
+  exportUsers(): void {
+    this.manageUsersService.exportUsers(this.users());
   }
 
-  generatePDFReport() {
-    this.pdfService.generateUsersReport(this.users);
+  exportEmails(): void {
+    this.manageUsersService.exportEmails(this.users());
+  }
+
+  generatePDFReport(): void {
+    this.manageUsersService.generatePDFReport(this.users());
   }
 }

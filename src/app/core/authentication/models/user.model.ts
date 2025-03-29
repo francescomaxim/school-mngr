@@ -12,3 +12,10 @@ export class User {
     return this._token;
   }
 }
+
+export interface AppUser {
+  id: string;
+  email: string;
+  fullName: string;
+  role: 'teacher' | 'student';
+}
