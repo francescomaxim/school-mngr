@@ -2,6 +2,7 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Database, get, ref } from '@angular/fire/database';
 import { ExcelService } from '../../../core/excel/excel.service';
+import { PdfService } from '../../../core/pdf/pdf.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -11,6 +12,7 @@ import { ExcelService } from '../../../core/excel/excel.service';
 })
 export class ManageUsersComponent {
   private excelService = inject(ExcelService);
+  private pdfService = inject(PdfService);
   private db = inject(Database);
   users: any[] = [];
 
@@ -64,5 +66,9 @@ export class ManageUsersComponent {
       ],
       'classter-user-emails'
     );
+  }
+
+  generatePDFReport() {
+    this.pdfService.generateUsersReport(this.users);
   }
 }
