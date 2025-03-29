@@ -34,8 +34,14 @@
 
   <!-- Butoane sub tabel -->
   <div class="mt-3 d-flex gap-3">
-    <button class="btn btn-outline-light">Export Users to Excel</button>
-    <button class="btn btn-outline-light">Export Emails List</button>
-    <button class="btn btn-outline-light">Generate Users Report (PDF)</button>
+    <button class="btn btn-outline-light" (click)="exportUsers()">
+      Export Users to Excel
+    </button>
+    <button class="btn btn-outline-light" (click)="exportEmails()">
+      Export Emails List
+    </button>
+    <button class="btn btn-outline-light" (click)="generatePDFReport()">
+      Generate Users Report (PDF)
+    </button>
   </div>
 </div>
