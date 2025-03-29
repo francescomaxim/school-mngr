@@ -3,6 +3,7 @@ import { Component, inject } from '@angular/core';
 import { Database, get, ref } from '@angular/fire/database';
 import { ExcelService } from '../../../core/excel/excel.service';
 import { PdfService } from '../../../core/pdf/pdf.service';
+import { ManageUsersService } from './manage-users.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -11,8 +12,7 @@ import { PdfService } from '../../../core/pdf/pdf.service';
   styleUrl: './manage-users.component.css',
 })
 export class ManageUsersComponent {
-  private excelService = inject(ExcelService);
-  private pdfService = inject(PdfService);
+  private manageUsersService = inject(ManageUsersService);
   private db = inject(Database);
   users: any[] = [];
 
@@ -42,33 +42,14 @@ export class ManageUsersComponent {
   }
 
   exportUsers() {
-    this.excelService.exportMultipleSheets(
-      [
-        {
-          sheetName: 'Users',
-          title: '📋 All Users in Classter',
-          data: this.users,
-        },
-      ],
-      'classter-users'
-    );
+    this.manageUsersService.exportUsers(this.users);
   }
 
   exportEmails() {
-    const emailsData = this.users.map((u) => ({ Email: u.email }));
-    this.excelService.exportMultipleSheets(
-      [
-        {
-          sheetName: 'Emails',
-          title: '📧 Email List',
-          data: emailsData,
-        },
-      ],
-      'classter-user-emails'
-    );
+    this.manageUsersService.exportEmails(this.users);
   }
 
   generatePDFReport() {
-    this.pdfService.generateUsersReport(this.users);
+    this.manageUsersService.generatePDFReport(this.users);
   }
 }
