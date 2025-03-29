@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Database, get, ref } from '@angular/fire/database';
+import { ExcelService } from '../../../core/excel/excel.service';
 
 @Component({
   selector: 'app-manage-users',
@@ -9,6 +10,7 @@ import { Database, get, ref } from '@angular/fire/database';
   styleUrl: './manage-users.component.css',
 })
 export class ManageUsersComponent {
+  private excelService = inject(ExcelService);
   private db = inject(Database);
   users: any[] = [];
 
@@ -35,5 +37,32 @@ export class ManageUsersComponent {
       // TODO: apel spre service pentru remove
       console.log('Removing user:', user);
     }
+  }
+
+  exportUsers() {
+    this.excelService.exportMultipleSheets(
+      [
+        {
+          sheetName: 'Users',
+          title: '📋 All Users in Classter',
+          data: this.users,
+        },
+      ],
+      'classter-users'
+    );
+  }
+
+  exportEmails() {
+    const emailsData = this.users.map((u) => ({ Email: u.email }));
+    this.excelService.exportMultipleSheets(
+      [
+        {
+          sheetName: 'Emails',
+          title: '📧 Email List',
+          data: emailsData,
+        },
+      ],
+      'classter-user-emails'
+    );
   }
 }
