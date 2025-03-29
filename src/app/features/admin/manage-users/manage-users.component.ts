@@ -1,12 +1,13 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ManageUsersService } from './manage-users.service';
-import { User } from '../../../core/authentication/models/user.model';
+import { AppUser, User } from '../../../core/authentication/models/user.model';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-manage-users',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './manage-users.component.html',
   styleUrl: './manage-users.component.css',
 })
@@ -15,18 +16,38 @@ export class ManageUsersComponent implements OnInit {
 
   users = this.manageUsersService.users;
 
+  editingUser: AppUser | null = null;
+  updatedFullName = '';
+  updatedRole: 'admin' | 'teacher' | 'student' = 'student';
+
   ngOnInit(): void {
     this.manageUsersService.getAllUsers();
   }
 
-  onEdit(user: User): void {
-    console.log('Edit user:', user);
-    // TODO: implementare modal/form editare
+  onEdit(user: AppUser): void {
+    this.editingUser = { ...user };
+    this.updatedFullName = user.fullName;
+    this.updatedRole = user.role;
   }
 
-  onRemove(user: User): void {
-    console.log('Remove user:', user);
-    //TODO: implementare modal/form stergere
+  onSaveEdit(): void {
+    if (!this.editingUser) return;
+
+    const updatedUser: Partial<User> = {
+      fullName: this.updatedFullName,
+      role: this.updatedRole,
+    };
+
+    this.manageUsersService
+      .updateUser(this.editingUser.id, updatedUser)
+      .then(() => {
+        this.editingUser = null;
+        this.manageUsersService.getAllUsers(); // Refresh
+      });
+  }
+
+  cancelEdit(): void {
+    this.editingUser = null;
   }
 
   exportUsers(): void {

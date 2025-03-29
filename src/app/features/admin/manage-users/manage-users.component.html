@@ -1,3 +1,4 @@
+<!-- Tabel -->
 <div class="container mt-4" style="max-width: 95%">
   <h2 class="text-white mb-4">Manage Users</h2>
 
@@ -19,25 +20,59 @@
           <td>{{ user.email }}</td>
           <td>{{ user.fullName }}</td>
           <td>{{ user.role }}</td>
-          <td class="d-flex">
+          <td class="d-flex gap-2 justify-content-center align-items-center">
             <button
-              class="btn btn-sm btn-warning me-2"
+              class="btn btn-sm btn-warning"
               style="width: 80px"
               (click)="onEdit(user)"
             >
               Edit
             </button>
-            <button
-              class="btn btn-sm btn-danger"
-              style="width: 80px"
-              (click)="onRemove(user)"
-            >
-              Delete
-            </button>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+
+  <!-- Form de Editare -->
+  <!-- FORM MODAL (POP-OUT) -->
+  <div
+    *ngIf="editingUser"
+    class="modal-backdrop d-flex justify-content-center align-items-center"
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      height: 100vh;
+      width: 100vw;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1050;
+    "
+  >
+    <div
+      class="bg-dark text-white p-4 rounded shadow"
+      style="width: 100%; max-width: 500px"
+    >
+      <h5 class="mb-3">✏️ Edit User: {{ editingUser.email }}</h5>
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" class="form-control" [(ngModel)]="updatedFullName" />
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Role</label>
+        <select class="form-select" [(ngModel)]="updatedRole">
+          <option value="student">Student</option>
+          <option value="teacher">Teacher</option>
+          <option value="admin">Admin</option>
+        </select>
+      </div>
+      <div class="d-flex justify-content-end gap-2">
+        <button class="btn btn-warning" (click)="onSaveEdit()">Save</button>
+        <button class="btn btn-outline-light" (click)="cancelEdit()">
+          Cancel
+        </button>
+      </div>
+    </div>
   </div>
 
   <!-- Butoane sub tabel -->

@@ -2,17 +2,22 @@ import { inject, Injectable, signal } from '@angular/core';
 import { ExcelService } from '../../../shared/services/excel.service';
 import { PdfService } from '../../../shared/services/pdf.service';
 import { UserService } from '../../../core/services/user.service';
-import { User } from '../../../core/authentication/models/user.model';
+import { AppUser } from '../../../core/authentication/models/user.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ManageUsersService {
-  // pdf and excel services
+  // Services
   private excelService = inject(ExcelService);
   private pdfService = inject(PdfService);
+  private userService = inject(UserService);
 
-  exportUsers(users: any[]) {
+  // Signal for users
+  users = signal<AppUser[]>([]);
+
+  // Export All Users to Excel
+  exportUsers(users: AppUser[]) {
     this.excelService.exportMultipleSheets(
       [
         {
@@ -25,7 +30,8 @@ export class ManageUsersService {
     );
   }
 
-  exportEmails(users: any[]) {
+  // Export Emails Only
+  exportEmails(users: AppUser[]) {
     const emailsData = users.map((u) => ({ Email: u.email }));
     this.excelService.exportMultipleSheets(
       [
@@ -38,18 +44,25 @@ export class ManageUsersService {
       'classter-user-emails'
     );
   }
-  generatePDFReport(users: any[]) {
+
+  // PDF Report
+  generatePDFReport(users: AppUser[]) {
     this.pdfService.generateUsersReport(users);
   }
 
-  // user service
-
-  private userService = inject(UserService);
-  users = signal<User[]>([]);
-
+  // Fetch All Users
   getAllUsers() {
     this.userService.getAllUsers().subscribe((users) => {
       this.users.set(users);
     });
+  }
+
+  // Update User
+  updateUser(userId: string, updatedData: Partial<AppUser>) {
+    return this.userService.updateUser(userId, updatedData);
+  }
+
+  refreshUsers() {
+    this.getAllUsers();
   }
 }
