@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { Database, get, ref } from '@angular/fire/database';
-import { ExcelService } from '../../../core/excel/excel.service';
-import { PdfService } from '../../../core/pdf/pdf.service';
+import { ExcelService } from '../../../shared/services/excel.service';
+import { PdfService } from '../../../shared/services/pdf.service';
 import { ManageUsersService } from './manage-users.service';
 
 @Component({

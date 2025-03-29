@@ -1,6 +1,6 @@
 import { inject, Injectable } from '@angular/core';
-import { ExcelService } from '../../../core/excel/excel.service';
-import { PdfService } from '../../../core/pdf/pdf.service';
+import { ExcelService } from '../../../shared/services/excel.service';
+import { PdfService } from '../../../shared/services/pdf.service';
 
 @Injectable({
   providedIn: 'root',
