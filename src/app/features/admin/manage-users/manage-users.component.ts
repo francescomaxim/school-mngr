@@ -1,7 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnInit, inject } from '@angular/core';
 import { ManageUsersService } from './manage-users.service';
-import { UserService } from '../../../core/services/user.service';
 import { User } from '../../../core/authentication/models/user.model';
 
 @Component({
