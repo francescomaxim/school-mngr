@@ -13,19 +13,11 @@ export class AdminPanelService {
     password: string;
     role: 'student' | 'teacher';
   }) {
-    this.authService
-      .signup(
-        user.email!,
-        user.password!,
-        user.role as 'student' | 'teacher',
-        user.fullName!
-      )
-      .then(() => {
-        alert('User created successfully ✅');
-      })
-      .catch((err) => {
-        console.error(err);
-        alert('Something went wrong ❌');
-      });
+    return this.authService.signup(
+      user.email!,
+      user.password!,
+      user.role as 'student' | 'teacher',
+      user.fullName!
+    );
   }
 }
