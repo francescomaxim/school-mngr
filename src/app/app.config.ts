@@ -6,8 +6,12 @@ import { getAuth, provideAuth } from '@angular/fire/auth';
 import { initializeApp, provideFirebaseApp } from '@angular/fire/app';
 import { firebaseConfig } from '../environments/environment';
 import { getDatabase, provideDatabase } from '@angular/fire/database';
+
 import { provideStore } from '@ngrx/store';
+import { provideEffects } from '@ngrx/effects';
 import { authReducer } from './stores/auth-store/auth.reducer';
+import { coursesReducer } from './stores/courses-store/courses.reducer';
+import { CoursesEffects } from './stores/courses-store/courses.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,8 +19,12 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
+
     provideStore({
       auth: authReducer,
+      courses: coursesReducer,
     }),
+
+    provideEffects(CoursesEffects),
   ],
 };

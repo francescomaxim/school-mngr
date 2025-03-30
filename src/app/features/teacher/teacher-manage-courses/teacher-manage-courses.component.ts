@@ -1,11 +1,18 @@
-import { Component, OnInit, inject, computed, signal } from '@angular/core';
+import { Component, OnInit, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
-import { selectUser } from '../../../stores/auth-store/auth.selectors';
+import { Observable } from 'rxjs';
+
 import { Course } from '../services/course.model';
-import { CoursesService } from '../services/course.service';
-import { TeacherManageCoursesService } from './teacher-manage-courses.service';
+import {
+  loadCourses,
+  addCourse,
+  deleteCourse,
+  updateCourse,
+} from '../../../stores/courses-store/courses.actions';
+import { selectAllCourses } from '../../../stores/courses-store/courses.selectors';
+import { selectUser } from '../../../stores/auth-store/auth.selectors';
 
 @Component({
   selector: 'app-teacher-manage-courses',
@@ -14,76 +21,106 @@ import { TeacherManageCoursesService } from './teacher-manage-courses.service';
   templateUrl: './teacher-manage-courses.component.html',
 })
 export class TeacherManageCoursesComponent implements OnInit {
-  private teacherManageCoursesService = inject(TeacherManageCoursesService);
   private store = inject(Store);
 
-  // User selectat din store
-  user = computed(() => this.store.selectSignal(selectUser)());
+  // Courses Observable
+  courses$: Observable<Course[]> = this.store.select(selectAllCourses);
 
-  // Cursuri
-  courses = this.teacherManageCoursesService.courses;
+  // Modal state
+  showAddCourseModal = false;
+  showDeleteModal = false;
 
-  // Modal
-  showAddCourseModal = signal(false);
-
-  // Formular
-  newCourse = signal<Partial<Course>>({
+  // Form model
+  newCourse: Partial<Course> = {
     title: '',
     description: '',
-  });
+  };
+
+  courseToDelete: Course | null = null;
 
   ngOnInit(): void {
-    this.teacherManageCoursesService.fetchCourses();
+    this.store.dispatch(loadCourses());
   }
 
+  // add
   onAddCourse() {
-    this.showAddCourseModal.set(true);
+    this.showAddCourseModal = true;
   }
 
   closeAddModal() {
-    this.showAddCourseModal.set(false);
-    this.newCourse.set({ title: '', description: '' });
+    this.showAddCourseModal = false;
+    this.newCourse = { title: '', description: '' };
   }
 
   submitNewCourse() {
-    const course = this.newCourse();
-    const teacherId = this.user()?.id;
+    if (!this.newCourse.title || !this.newCourse.description) return;
 
-    if (!course.title || !course.description || !teacherId) return;
+    const teacherId = this.store.selectSignal(selectUser)()?.id ?? 'unknown';
 
-    const newCourse: Course = {
-      ...course,
-      teacherId,
+    const course: Course = {
+      ...this.newCourse,
+      teacherId: teacherId,
       createdAt: new Date().toISOString(),
     } as Course;
 
-    this.teacherManageCoursesService.addCourse(newCourse).then(() => {
-      this.teacherManageCoursesService.fetchCourses();
-      this.closeAddModal();
-    });
+    this.store.dispatch(addCourse({ course }));
+    this.closeAddModal();
   }
+
+  // Delete
+
+  confirmRemove(course: Course) {
+    this.courseToDelete = course;
+    this.showDeleteModal = true;
+  }
+
+  cancelRemove() {
+    this.courseToDelete = null;
+    this.showDeleteModal = false;
+  }
+
+  removeConfirmed() {
+    if (this.courseToDelete?.id) {
+      this.store.dispatch(deleteCourse({ id: this.courseToDelete.id }));
+    }
+    this.cancelRemove();
+  }
+
+  //edit
+  showEditCourseModal = false;
+  courseBeingEdited: Course | null = null;
+  editedCourse: Partial<Course> = {};
 
   onEdit(course: Course) {
-    console.log('Edit course:', course);
+    this.courseBeingEdited = course;
+    this.editedCourse = {
+      title: course.title,
+      description: course.description,
+    };
+    this.showEditCourseModal = true;
   }
 
-  courseToDelete = signal<Course | null>(null);
-
-  onRemove(course: Course) {
-    this.courseToDelete.set(course);
+  closeEditModal() {
+    this.courseBeingEdited = null;
+    this.editedCourse = {};
+    this.showEditCourseModal = false;
   }
 
-  confirmDeleteCourse() {
-    const course = this.courseToDelete();
-    if (course?.id) {
-      this.teacherManageCoursesService.deleteCourse(course.id).then(() => {
-        this.teacherManageCoursesService.fetchCourses();
-        this.courseToDelete.set(null);
-      });
-    }
-  }
+  submitEditCourse() {
+    if (
+      !this.courseBeingEdited?.id ||
+      !this.editedCourse.title ||
+      !this.editedCourse.description
+    )
+      return;
 
-  cancelDelete() {
-    this.courseToDelete.set(null);
+    this.store.dispatch(
+      updateCourse({
+        courseId: this.courseBeingEdited.id,
+        updatedCourse: this.editedCourse,
+      })
+    );
+
+    this.closeEditModal();
   }
 }

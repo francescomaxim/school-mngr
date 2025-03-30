@@ -23,7 +23,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let course of courses()">
+        <tr *ngFor="let course of courses$ | async">
           <td>{{ course.title }}</td>
           <td>{{ course.description }}</td>
           <td>{{ course.createdAt | date : "short" }}</td>
@@ -31,7 +31,10 @@
             <button class="btn btn-sm btn-warning" (click)="onEdit(course)">
               Edit
             </button>
-            <button class="btn btn-sm btn-danger" (click)="onRemove(course)">
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="confirmRemove(course)"
+            >
               Delete
             </button>
           </td>
@@ -43,7 +46,7 @@
 
 <!-- Modal: Add Course -->
 <div
-  *ngIf="showAddCourseModal()"
+  *ngIf="showAddCourseModal"
   class="modal-backdrop d-flex justify-content-center align-items-center"
   style="
     position: fixed;
@@ -66,7 +69,7 @@
       <input
         type="text"
         class="form-control"
-        [(ngModel)]="newCourse().title"
+        [(ngModel)]="newCourse.title"
         placeholder="Course Title"
       />
     </div>
@@ -76,7 +79,7 @@
       <textarea
         class="form-control"
         rows="3"
-        [(ngModel)]="newCourse().description"
+        [(ngModel)]="newCourse.description"
         placeholder="Course Description"
       ></textarea>
     </div>
@@ -94,7 +97,7 @@
 
 <!-- Modal: Confirm Delete -->
 <div
-  *ngIf="courseToDelete()"
+  *ngIf="courseToDelete"
   class="modal-backdrop d-flex justify-content-center align-items-center"
   style="
     position: fixed;
@@ -113,15 +116,64 @@
     <h5 class="mb-3">❗ Confirm Deletion</h5>
     <p>
       Are you sure you want to delete the course
-      <strong>{{ courseToDelete()?.title }}</strong
+      <strong>{{ courseToDelete!.title }}</strong
       >?
     </p>
 
     <div class="d-flex justify-content-end gap-2">
-      <button class="btn btn-danger" (click)="confirmDeleteCourse()">
+      <button class="btn btn-danger" (click)="removeConfirmed()">
         Yes, Delete
       </button>
-      <button class="btn btn-outline-light" (click)="cancelDelete()">
+      <button class="btn btn-outline-light" (click)="cancelRemove()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit Course -->
+<div
+  *ngIf="showEditCourseModal"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 500px"
+  >
+    <h5 class="mb-3">✏️ Edit Course</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="editedCourse.title"
+        placeholder="Course Title"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        [(ngModel)]="editedCourse.description"
+        placeholder="Course Description"
+      ></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-warning" (click)="submitEditCourse()">Save</button>
+      <button class="btn btn-outline-light" (click)="closeEditModal()">
         Cancel
       </button>
     </div>
