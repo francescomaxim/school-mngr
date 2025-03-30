@@ -1,5 +1,5 @@
 import { Injectable, inject } from '@angular/core';
-import { RealtimeDatabaseService } from '../../../shared/services/realtime-database.service';
+import { RealtimeDatabaseService } from '../../../../shared/services/realtime-database.service';
 import { Course } from './course.model';
 import { map, Observable } from 'rxjs';
 

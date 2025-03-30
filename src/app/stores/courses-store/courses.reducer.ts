@@ -1,5 +1,5 @@
 import { createReducer, on } from '@ngrx/store';
-import { Course } from '../../features/teacher/services/course.model';
+import { Course } from '../../features/teacher/services/courses/course.model';
 import * as CourseActions from './courses.actions';
 import { updateCourseSuccess } from './courses.actions';
 

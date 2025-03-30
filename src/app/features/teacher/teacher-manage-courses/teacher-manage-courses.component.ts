@@ -4,7 +4,7 @@ import { FormsModule } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import { Observable } from 'rxjs';
 
-import { Course } from '../services/course.model';
+import { Course } from '../services/courses/course.model';
 import {
   loadCourses,
   addCourse,

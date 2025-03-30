@@ -1,7 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
 import { Store } from '@ngrx/store';
-import { CoursesService } from '../../features/teacher/services/course.service';
+import { CoursesService } from '../../features/teacher/services/courses/course.service';
 import {
   loadCourses,
   loadCoursesSuccess,

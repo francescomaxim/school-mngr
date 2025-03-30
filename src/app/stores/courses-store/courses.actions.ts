@@ -1,5 +1,5 @@
 import { createAction, props } from '@ngrx/store';
-import { Course } from '../../features/teacher/services/course.model';
+import { Course } from '../../features/teacher/services/courses/course.model';
 
 // Load
 export const loadCourses = createAction('[Courses] Load Courses');
