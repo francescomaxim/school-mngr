@@ -1,13 +1,22 @@
 <div class="container my-5 text-white">
-  <!-- Header cu titlu și buton -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
+  <!-- Header -->
+  <div
+    class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3"
+  >
     <h2 class="mb-0">📚 Manage Assignments</h2>
-    <button class="btn btn-warning btn-sm">➕ Add New Assignment</button>
+    <button class="btn btn-warning btn-sm" (click)="onAddAssignment()">
+      ➕ Add New Assignment
+    </button>
   </div>
 
-  <!-- Tabel de teme -->
-  <div class="table-responsive bg-dark p-3 rounded shadow">
-    <table class="table table-dark table-bordered table-hover align-middle">
+  <!-- Table -->
+  <div
+    class="table-responsive bg-dark p-3 rounded shadow mt-4"
+    style="max-height: 400px; overflow-y: auto"
+  >
+    <table
+      class="table table-dark table-bordered table-hover align-middle mb-0"
+    >
       <thead>
         <tr>
           <th>Title</th>
@@ -18,34 +27,249 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let assignment of assignments">
+        <tr *ngFor="let assignment of assignments$ | async">
           <td>{{ assignment.title }}</td>
-          <td>{{ assignment.course }}</td>
+          <td>{{ getCourseTitle(assignment.courseId) }}</td>
           <td>{{ assignment.dueDate | date : "mediumDate" }}</td>
           <td>
-            <span
-              class="badge"
-              [ngClass]="{
-                'bg-success': assignment.status === 'Active',
-                'bg-secondary': assignment.status === 'Closed'
-              }"
-            >
-              {{ assignment.status }}
+            <span class="badge" [ngClass]="getStatusClass(assignment.dueDate)">
+              {{ getStatusLabel(assignment.dueDate) }}
             </span>
           </td>
           <td class="text-center">
-            <button class="btn btn-outline-light btn-sm me-1">Details</button>
-            <button class="btn btn-outline-primary btn-sm me-1">Edit</button>
-            <button class="btn btn-outline-danger btn-sm">Delete</button>
+            <button
+              class="btn btn-outline-light btn-sm me-1"
+              (click)="onView(assignment)"
+            >
+              Details
+            </button>
+            <button
+              class="btn btn-outline-primary btn-sm me-1"
+              (click)="onEdit(assignment)"
+            >
+              Edit
+            </button>
+            <button
+              class="btn btn-outline-danger btn-sm"
+              (click)="confirmDelete(assignment)"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
   </div>
+</div>
 
-  <!-- Zona de acțiuni rapide -->
-  <div class="d-flex gap-3 justify-content-end mt-4">
-    <button class="btn btn-outline-light btn-sm">📤 Export to CSV</button>
-    <button class="btn btn-outline-light btn-sm">📁 Import Assignments</button>
+<!-- Modal: Add Assignment -->
+<div
+  *ngIf="showAddModal()"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 550px"
+  >
+    <h5 class="mb-3">➕ Add Assignment</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="newAssignment().title"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        rows="3"
+        class="form-control"
+        [(ngModel)]="newAssignment().description"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Select Course</label>
+      <select class="form-select" [(ngModel)]="newAssignment().courseId">
+        <option [ngValue]="''" disabled>Select a course</option>
+        <option
+          *ngFor="let course of teacherCourses$ | async"
+          [value]="course.id"
+        >
+          {{ course.title }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Due Date</label>
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="newAssignment().dueDate"
+      />
+    </div>
+
+    <!-- Upload import -->
+    <div class="mb-3">
+      <label class="form-label">Import File</label>
+      <select class="form-select mb-2" [(ngModel)]="importType">
+        <option value="image">📷 Image</option>
+        <option value="file">📄 File (JSON, DOCX)</option>
+      </select>
+
+      <!-- Image -->
+      <input
+        *ngIf="importType === 'image'"
+        type="file"
+        accept="image/*"
+        class="form-control"
+        (change)="handleImportImage($event)"
+      />
+
+      <!-- File -->
+      <input
+        *ngIf="importType === 'file'"
+        type="file"
+        accept=".json,.docx"
+        class="form-control"
+        (change)="handleImportFile($event)"
+      />
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-warning" (click)="submitAssignment()">
+        Create
+      </button>
+      <button class="btn btn-outline-light" (click)="cancelAdd()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Delete Confirmation -->
+<div
+  *ngIf="assignmentToDelete()"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 500px"
+  >
+    <h5 class="mb-3">❗ Confirm Deletion</h5>
+    <p>
+      Are you sure you want to delete the assignment
+      <strong>{{ assignmentToDelete()?.title }}</strong
+      >?
+    </p>
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-danger" (click)="deleteConfirmed()">
+        Yes, Delete
+      </button>
+      <button class="btn btn-outline-light" (click)="cancelDelete()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: View / Edit Assignment -->
+<div
+  *ngIf="selectedAssignment()"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 550px"
+  >
+    <h5 class="mb-3">
+      {{ editMode() ? "✏️ Edit Assignment" : "🔍 Assignment Details" }}
+    </h5>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="selectedAssignment()!.title"
+        [readonly]="!editMode()"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        rows="3"
+        class="form-control"
+        [(ngModel)]="selectedAssignment()!.description"
+        [readonly]="!editMode()"
+      ></textarea>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Course</label>
+      <select
+        class="form-select"
+        [(ngModel)]="selectedAssignment()!.courseId"
+        [disabled]="!editMode()"
+      >
+        <option
+          *ngFor="let course of teacherCourses$ | async"
+          [value]="course.id"
+        >
+          {{ course.title }}
+        </option>
+      </select>
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Due Date</label>
+      <input
+        type="date"
+        class="form-control"
+        [(ngModel)]="selectedAssignment()!.dueDate"
+        [readonly]="!editMode()"
+      />
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button *ngIf="editMode()" class="btn btn-warning" (click)="submitEdit()">
+        Save
+      </button>
+      <button class="btn btn-outline-light" (click)="cancelViewEdit()">
+        Close
+      </button>
+    </div>
   </div>
 </div>

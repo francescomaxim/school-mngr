@@ -35,4 +35,28 @@ export class AssignmentService {
       map((assignments) => assignments.filter((a) => a.courseId === courseId))
     );
   }
+
+  getByTeacher(teacherId: string): Observable<Assignment[]> {
+    return this.getAll().pipe(
+      map((assignments) => assignments.filter((a) => a.teacherId === teacherId))
+    );
+  }
+
+  getByStudent(studentId: string): Observable<Assignment[]> {
+    return this.getAll().pipe(
+      map((assignments) =>
+        assignments.filter((a) =>
+          a.submissions?.some((s) => s.studentId === studentId)
+        )
+      )
+    );
+  }
+
+  getDueAssignments(courseId: string): Observable<Assignment[]> {
+    return this.getByCourse(courseId).pipe(
+      map((assignments) =>
+        assignments.filter((a) => new Date(a.dueDate) > new Date())
+      )
+    );
+  }
 }

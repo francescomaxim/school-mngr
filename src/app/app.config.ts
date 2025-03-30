@@ -12,19 +12,21 @@ import { provideEffects } from '@ngrx/effects';
 import { authReducer } from './stores/auth-store/auth.reducer';
 import { coursesReducer } from './stores/courses-store/courses.reducer';
 import { CoursesEffects } from './stores/courses-store/courses.effects';
+import { assignmentsReducer } from './stores/assigments-store/assigments.reducer';
+import { AssignmentsEffects } from './stores/assigments-store/assigments.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
+    provideStore({
+      auth: authReducer,
+      courses: coursesReducer,
+      assignments: assignmentsReducer,
+    }),
     provideRouter(routes),
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
 
-    provideStore({
-      auth: authReducer,
-      courses: coursesReducer,
-    }),
-
-    provideEffects(CoursesEffects),
+    provideEffects(CoursesEffects, AssignmentsEffects),
   ],
 };
