@@ -18,6 +18,7 @@ import { selectUser } from '../../../stores/auth-store/auth.selectors';
 
 import { selectAllCourses } from '../../../stores/courses-store/courses.selectors';
 import { loadCourses } from '../../../stores/courses-store/courses.actions';
+import { AssignmentUploadService } from '../../../core/services/assigments-upload.service';
 
 @Component({
   selector: 'app-teacher-assigments',
@@ -28,6 +29,7 @@ import { loadCourses } from '../../../stores/courses-store/courses.actions';
 })
 export class TeacherAssigmentsComponent implements OnInit {
   private store = inject(Store);
+  private uploadService = inject(AssignmentUploadService);
 
   assignments$ = this.store.select(selectAllAssignments);
   user = this.store.selectSignal(selectUser);
@@ -99,15 +101,41 @@ export class TeacherAssigmentsComponent implements OnInit {
     });
   }
 
-  submitAssignment() {
+  async submitAssignment() {
     const userId = this.user()?.id;
-    if (!userId) return;
+    const file = this.importedFile();
+
+    if (
+      !userId ||
+      !this.newAssignment().title ||
+      !this.newAssignment().courseId
+    )
+      return;
 
     const assignment: Assignment = {
       ...this.newAssignment(),
       teacherId: userId,
       createdAt: new Date().toISOString(),
     } as Assignment;
+
+    // 1. Adaugă assignment-ul (fără fileUrl inițial)
+    const generatedId = `${Date.now()}`;
+    assignment.id = generatedId;
+
+    // 2. Dacă există fișier, urcă-l și adaugă URL
+    if (file) {
+      const fileUrl = await this.uploadService.uploadAssignmentFile(
+        file,
+        generatedId
+      );
+      assignment.submissions = [
+        {
+          studentId: 'admin', // placeholder, poate fi ignorat sau înlocuit
+          fileUrl,
+          submittedAt: new Date().toISOString(),
+        },
+      ];
+    }
 
     this.store.dispatch(addAssignment({ assignment }));
     this.cancelAdd();
@@ -142,9 +170,11 @@ export class TeacherAssigmentsComponent implements OnInit {
   cancelViewEdit() {
     this.selectedAssignment.set(null);
     this.editMode.set(false);
+    this.editedFile.set(null);
+    this.editImportType = 'image';
   }
 
-  submitEdit() {
+  async submitEdit() {
     const assignment = this.selectedAssignment();
     if (!assignment || !assignment.id) return;
 
@@ -154,6 +184,22 @@ export class TeacherAssigmentsComponent implements OnInit {
       dueDate: assignment.dueDate,
       courseId: assignment.courseId,
     };
+
+    const file = this.editedFile();
+
+    if (file) {
+      const fileUrl = await this.uploadService.uploadAssignmentFile(
+        file,
+        assignment.id
+      );
+      changes.submissions = [
+        {
+          studentId: 'admin', // placeholder
+          fileUrl,
+          submittedAt: new Date().toISOString(),
+        },
+      ];
+    }
 
     this.store.dispatch(updateAssignment({ id: assignment.id, changes }));
     this.cancelViewEdit();
@@ -186,5 +232,42 @@ export class TeacherAssigmentsComponent implements OnInit {
       alert('❌ Invalid file!');
       this.importedFile.set(null);
     }
+  }
+
+  editImportType = 'image';
+  editedFile = signal<File | null>(null);
+
+  downloadFile(fileUrl: string | undefined) {
+    if (!fileUrl) return;
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.target = '_blank';
+    a.download = fileUrl.split('/').pop() ?? 'assignment_file';
+    a.click();
+  }
+
+  handleEditImportImage(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+      alert('❌ Invalid image file!');
+      this.editedFile.set(null);
+      return;
+    }
+    this.editedFile.set(file);
+  }
+
+  handleEditImportFile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (
+      !file ||
+      (!file.type.includes('json') &&
+        !file.name.endsWith('.json') &&
+        !file.name.endsWith('.docx'))
+    ) {
+      alert('❌ Invalid file!');
+      this.editedFile.set(null);
+      return;
+    }
+    this.editedFile.set(file);
   }
 }

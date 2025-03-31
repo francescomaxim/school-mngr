@@ -14,6 +14,7 @@ import { coursesReducer } from './stores/courses-store/courses.reducer';
 import { CoursesEffects } from './stores/courses-store/courses.effects';
 import { assignmentsReducer } from './stores/assigments-store/assigments.reducer';
 import { AssignmentsEffects } from './stores/assigments-store/assigments.effects';
+import { provideStorage, getStorage } from '@angular/fire/storage';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -26,6 +27,7 @@ export const appConfig: ApplicationConfig = {
     provideFirebaseApp(() => initializeApp(firebaseConfig)),
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
+    provideStorage(() => getStorage()),
 
     provideEffects(CoursesEffects, AssignmentsEffects),
   ],
