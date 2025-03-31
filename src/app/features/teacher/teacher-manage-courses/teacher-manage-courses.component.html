@@ -1,52 +1,181 @@
-<div class="container my-5 text-white">
-  <!-- Header cu titlu și buton -->
-  <div class="d-flex justify-content-between align-items-center mb-4">
-    <h2 class="mb-0 fw-bold fs-3">📚 Manage Courses</h2>
-    <button class="btn btn-warning py-2 px-4" (click)="onAddCourse()">
+<div class="container my-4 text-white">
+  <div
+    class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3"
+  >
+    <h2 class="mb-0">📚 Manage Courses</h2>
+    <button class="btn btn-warning" (click)="onAddCourse()">
       ➕ Add New Course
     </button>
   </div>
 
-  <!-- Tabelul -->
-  <div class="table-responsive bg-dark p-3 rounded shadow" style="width: 90%">
-    <table class="table table-dark table-hover align-middle">
-      <thead>
+  <!-- Scrollable table wrapper -->
+  <div
+    class="bg-dark text-white p-3 rounded shadow"
+    style="max-height: 400px; overflow-y: auto; overflow-x: auto"
+  >
+    <table class="table table-dark table-bordered table-hover mb-0">
+      <thead class="sticky-top bg-dark">
         <tr>
           <th>Title</th>
           <th>Description</th>
-          <th>Students</th>
-          <th style="width: 250px">Actions</th>
+          <th>Created</th>
+          <th style="width: 150px">Actions</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let course of courses">
+        <tr *ngFor="let course of courses$ | async">
           <td>{{ course.title }}</td>
           <td>{{ course.description }}</td>
-          <td>{{ course.students }}</td>
-          <td>
-            <div class="d-flex gap-2">
-              <button
-                class="btn btn-outline-light btn-sm w-100"
-                (click)="onViewDetails(course.id)"
-              >
-                👁️ View
-              </button>
-              <button
-                class="btn btn-outline-primary btn-sm w-100"
-                (click)="onEditCourse(course.id)"
-              >
-                ✏️ Edit
-              </button>
-              <button
-                class="btn btn-outline-danger btn-sm w-100"
-                (click)="onDeleteCourse(course.id)"
-              >
-                🗑️ Delete
-              </button>
-            </div>
+          <td>{{ course.createdAt | date : "short" }}</td>
+          <td class="d-flex gap-2 justify-content-center align-items-center">
+            <button class="btn btn-sm btn-warning" (click)="onEdit(course)">
+              Edit
+            </button>
+            <button
+              class="btn btn-sm btn-danger"
+              (click)="confirmRemove(course)"
+            >
+              Delete
+            </button>
           </td>
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Modal: Add Course -->
+<div
+  *ngIf="showAddCourseModal"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 500px"
+  >
+    <h5 class="mb-3">➕ Add New Course</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="newCourse.title"
+        placeholder="Course Title"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        [(ngModel)]="newCourse.description"
+        placeholder="Course Description"
+      ></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-warning" (click)="submitNewCourse()">
+        Create
+      </button>
+      <button class="btn btn-outline-light" (click)="closeAddModal()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Confirm Delete -->
+<div
+  *ngIf="courseToDelete"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 500px"
+  >
+    <h5 class="mb-3">❗ Confirm Deletion</h5>
+    <p>
+      Are you sure you want to delete the course
+      <strong>{{ courseToDelete!.title }}</strong
+      >?
+    </p>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-danger" (click)="removeConfirmed()">
+        Yes, Delete
+      </button>
+      <button class="btn btn-outline-light" (click)="cancelRemove()">
+        Cancel
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal: Edit Course -->
+<div
+  *ngIf="showEditCourseModal"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 500px"
+  >
+    <h5 class="mb-3">✏️ Edit Course</h5>
+
+    <div class="mb-3">
+      <label class="form-label">Title</label>
+      <input
+        type="text"
+        class="form-control"
+        [(ngModel)]="editedCourse.title"
+        placeholder="Course Title"
+      />
+    </div>
+
+    <div class="mb-3">
+      <label class="form-label">Description</label>
+      <textarea
+        class="form-control"
+        rows="3"
+        [(ngModel)]="editedCourse.description"
+        placeholder="Course Description"
+      ></textarea>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2">
+      <button class="btn btn-warning" (click)="submitEditCourse()">Save</button>
+      <button class="btn btn-outline-light" (click)="closeEditModal()">
+        Cancel
+      </button>
+    </div>
   </div>
 </div>
