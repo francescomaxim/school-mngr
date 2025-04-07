@@ -18,4 +18,5 @@ export interface AppUser {
   email: string;
   fullName: string;
   role: 'teacher' | 'student';
+  enrolledCourses?: string[];
 }

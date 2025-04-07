@@ -7,11 +7,12 @@
     <select
       id="courseFilter"
       class="form-select bg-dark text-white border-secondary"
-      [(ngModel)]="selectedCourse"
+      [(ngModel)]="selectedCourseId"
+      (change)="onCourseChange($event)"
     >
-      <option value="">Toate cursurile</option>
-      <option *ngFor="let course of courses" [value]="course">
-        {{ course }}
+      <option [value]="''">Selectează un curs</option>
+      <option *ngFor="let course of courses()" [value]="course.id">
+        {{ course.title }}
       </option>
     </select>
   </div>
@@ -22,14 +23,12 @@
       <thead class="table-secondary text-dark">
         <tr>
           <th>Data</th>
-          <th>Curs</th>
           <th>Status</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let record of filteredAttendance()">
+        <tr *ngFor="let record of attendance()">
           <td>{{ record.date | date : "dd MMM yyyy" }}</td>
-          <td>{{ record.course }}</td>
           <td>
             <span
               class="badge"
@@ -38,18 +37,16 @@
                 'bg-danger': record.status === 'Absent',
                 'bg-warning text-dark': record.status === 'Motivat'
               }"
-              >{{ record.status }}</span
             >
+              {{ record.status }}
+            </span>
           </td>
         </tr>
       </tbody>
     </table>
 
     <!-- Empty State -->
-    <div
-      *ngIf="filteredAttendance().length === 0"
-      class="text-center text-white-50 mt-3"
-    >
+    <div *ngIf="attendance.length === 0" class="text-center text-white-50 mt-3">
       Nu există înregistrări pentru cursul selectat.
     </div>
   </div>
