@@ -19,6 +19,8 @@ import { selectUser } from '../../../stores/auth-store/auth.selectors';
 import { selectAllCourses } from '../../../stores/courses-store/courses.selectors';
 import { loadCourses } from '../../../stores/courses-store/courses.actions';
 import { AssignmentUploadService } from '../../../core/services/assigments-upload.service';
+import { UserService } from '../../../core/services/user.service';
+import { AssignmentFirestoreService } from '../../services/assigments-firestore.service';
 
 @Component({
   selector: 'app-teacher-assigments',
@@ -35,10 +37,25 @@ export class TeacherAssigmentsComponent implements OnInit {
   user = this.store.selectSignal(selectUser);
   allCourses$ = this.store.select(selectAllCourses);
 
+  submissionListModal = signal<{
+    assignmentId: string;
+    assignmentTitle: string;
+    submissions: {
+      fullName: string;
+      email: string;
+      fileUrl: string;
+      submittedAt: string;
+      studentId: string;
+      grade?: number;
+    }[];
+  } | null>(null);
+
   showAddModal = signal(false);
   assignmentToDelete = signal<Assignment | null>(null);
   selectedAssignment = signal<Assignment | null>(null);
   editMode = signal(false);
+
+  private userService = inject(UserService);
 
   newAssignment = signal<Partial<Assignment>>({
     title: '',
@@ -64,6 +81,63 @@ export class TeacherAssigmentsComponent implements OnInit {
         this.courseMap.set(c.id!, c.title);
       });
     });
+  }
+
+  private firestoreService = inject(AssignmentFirestoreService);
+
+  async gradeStudent(studentId: string, grade: number) {
+    const assignmentId = this.submissionListModal()?.assignmentId;
+    if (!assignmentId || !studentId || !grade) return;
+
+    try {
+      await this.firestoreService.gradeSubmission(
+        assignmentId,
+        studentId,
+        grade
+      );
+      console.log(`✅ Notă ${grade} salvată pentru student ${studentId}`);
+    } catch (error) {
+      console.error('❌ Eroare la salvarea notei:', error);
+    }
+  }
+
+  async viewSubmissions(assignment: Assignment) {
+    if (!assignment.id) return;
+
+    try {
+      const submissions =
+        await this.firestoreService.getSubmissionsForAssignment(assignment.id);
+
+      const studentIds = submissions.map((s) => s.studentId);
+      const students = await Promise.all(
+        studentIds.map((id) => this.userService.getUserByIdOnce(id))
+      );
+
+      const enrichedSubmissions = submissions.map((sub) => {
+        const student = students.find((s) => s?.id === sub.studentId);
+
+        return {
+          fullName: student?.fullName ?? 'Necunoscut',
+          email: student?.email ?? 'necunoscut@student.com',
+          fileUrl: sub.fileUrl,
+          submittedAt: sub.submittedAt,
+          studentId: sub.studentId,
+          ...(sub.grade !== undefined ? { grade: sub.grade } : {}), // ✅ doar dacă există
+        };
+      });
+
+      this.submissionListModal.set({
+        assignmentId: assignment.id,
+        assignmentTitle: assignment.title,
+        submissions: enrichedSubmissions,
+      });
+    } catch (error) {
+      console.error('❌ Eroare la încărcarea submissions:', error);
+    }
+  }
+
+  closeSubmissionsModal() {
+    this.submissionListModal.set(null);
   }
 
   getCourseTitle(courseId: string): string {

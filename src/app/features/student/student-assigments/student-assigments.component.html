@@ -1,7 +1,6 @@
 <div class="container my-5 text-white">
   <h2 class="mb-4">📥 Teme Primite</h2>
 
-  <!-- Tabel cu temele -->
   <div class="table-responsive bg-dark p-3 rounded shadow">
     <table class="table table-dark table-bordered align-middle text-center">
       <thead class="table-secondary text-dark">
@@ -11,10 +10,11 @@
           <th>Deadline</th>
           <th>Status</th>
           <th>Acțiuni</th>
+          <th>Notă</th>
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let assignment of assignments">
+        <tr *ngFor="let assignment of assignments$ | async">
           <td>{{ assignment.course }}</td>
           <td>{{ assignment.title }}</td>
           <td>{{ assignment.deadline | date : "dd MMM yyyy" }}</td>
@@ -45,13 +45,103 @@
               Trimite
             </button>
           </td>
+          <td>
+            {{
+              assignment.grade !== null && assignment.grade !== undefined
+                ? assignment.grade
+                : "—"
+            }}
+          </td>
         </tr>
       </tbody>
     </table>
 
+    <!-- Modal Upload Assignment -->
+    <div
+      *ngIf="uploadAssignment()"
+      class="modal-backdrop d-flex justify-content-center align-items-center"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1050;
+      "
+    >
+      <div
+        class="bg-dark text-white p-4 rounded shadow"
+        style="max-width: 500px; width: 100%"
+      >
+        <h5 class="mb-3">📤 Trimite Tema</h5>
+        <p>
+          <strong>{{ uploadAssignment()?.title }}</strong>
+        </p>
+        <p class="text-white-50 mb-3">
+          Încarcă fișierul pe care vrei să-l trimiți pentru această temă.
+        </p>
+
+        <input
+          type="file"
+          class="form-control mb-3"
+          (change)="handleFileChange($event)"
+        />
+
+        <div class="d-flex justify-content-end gap-2">
+          <button class="btn btn-warning" (click)="confirmUpload()">
+            Trimite
+          </button>
+          <button class="btn btn-outline-light" (click)="cancelUpload()">
+            Renunță
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Detalii Temă -->
+    <div
+      *ngIf="selectedAssignment()"
+      class="modal-backdrop d-flex justify-content-center align-items-center"
+      style="
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100vh;
+        width: 100vw;
+        background-color: rgba(0, 0, 0, 0.7);
+        z-index: 1050;
+      "
+    >
+      <div
+        class="bg-dark text-white p-4 rounded shadow"
+        style="max-width: 500px"
+      >
+        <h5 class="mb-3">🔍 {{ selectedAssignment()?.title }}</h5>
+        <p><strong>Curs:</strong> {{ selectedAssignment()?.courseTitle }}</p>
+        <p><strong>Descriere:</strong></p>
+        <p class="text-white-50">
+          {{ selectedAssignment()?.description || "Nicio descriere" }}
+        </p>
+
+        <div class="d-flex justify-content-end gap-2 mt-3">
+          <button
+            *ngIf="selectedAssignment()?.fileUrl"
+            class="btn btn-outline-light"
+            (click)="downloadFile(selectedAssignment()?.fileUrl!)"
+          >
+            ⬇️ Descarcă Fișier
+          </button>
+          <button class="btn btn-warning" (click)="closeDetails()">
+            Închide
+          </button>
+        </div>
+      </div>
+    </div>
+
     <!-- Empty State -->
     <div
-      *ngIf="assignments.length === 0"
+      *ngIf="(assignments$ | async)?.length === 0"
       class="text-center text-white-50 mt-3"
     >
       Nu ai nicio temă momentan.

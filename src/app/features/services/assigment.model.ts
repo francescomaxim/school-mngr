@@ -14,4 +14,5 @@ export interface Submission {
   studentId: string;
   fileUrl: string;
   submittedAt: string;
+  grade?: number;
 }

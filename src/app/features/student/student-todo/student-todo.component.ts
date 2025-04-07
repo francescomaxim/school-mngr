@@ -1,38 +1,66 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-
-interface Task {
-  label: string;
-  completed: boolean;
-}
+import { Store } from '@ngrx/store';
+import { selectUser } from '../../../stores/auth-store/auth.selectors';
+import { TodoService } from '../../services/to-do.service';
+import { Todo } from '../../services/todo.model';
 
 @Component({
   selector: 'app-student-todo',
+  standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './student-todo.component.html',
   styleUrl: './student-todo.component.css',
 })
-export class StudentTodoComponent {
+export class StudentTodoComponent implements OnInit {
+  private todoService = inject(TodoService);
+  private store = inject(Store);
+
   newTask = '';
-  tasks: Task[] = [
-    { label: 'Trimite tema la Algoritmi', completed: false },
-    { label: 'Învață pentru testul la EGC', completed: false },
-    { label: 'Participă la cursul de Rețele', completed: true },
-  ];
+  tasks: Todo[] = [];
+  userId = '';
+
+  ngOnInit(): void {
+    this.store.select(selectUser).subscribe((user) => {
+      if (user) {
+        this.userId = user.id;
+        this.loadTasks();
+      }
+    });
+  }
+
+  loadTasks() {
+    this.todoService.getTodosByUser(this.userId).subscribe((todos) => {
+      this.tasks = todos;
+    });
+  }
 
   addTask() {
-    if (!this.newTask.trim()) return;
+    const trimmed = this.newTask.trim();
+    if (!trimmed) return;
 
-    this.tasks.push({ label: this.newTask.trim(), completed: false });
-    this.newTask = '';
+    const todo: Todo = {
+      userId: this.userId,
+      label: trimmed,
+      completed: false,
+    };
+
+    this.todoService.addTodo(todo).then(() => {
+      this.newTask = '';
+      this.loadTasks(); // opțional: poți actualiza doar local dacă vrei
+    });
   }
 
-  toggleComplete(index: number) {
-    this.tasks[index].completed = !this.tasks[index].completed;
+  toggleComplete(task: Todo) {
+    if (!task.id) return;
+    this.todoService.deleteTodo(task.id).then(() => {
+      this.tasks = this.tasks.filter((t) => t.id !== task.id);
+    });
   }
 
-  removeTask(index: number) {
-    this.tasks.splice(index, 1);
+  removeTask(todo: Todo) {
+    if (!todo?.id) return;
+    this.todoService.deleteTodo(todo.id);
   }
 }
