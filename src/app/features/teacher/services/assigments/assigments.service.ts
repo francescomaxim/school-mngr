@@ -27,6 +27,7 @@ export class AssignmentService {
   }
 
   delete(id: string): Promise<void> {
+    console.log('🗑️ Ștergere assignment în Firebase:', id);
     return this.db.delete(this.collectionName, id);
   }
 

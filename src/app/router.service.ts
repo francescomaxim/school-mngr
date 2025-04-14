@@ -11,6 +11,10 @@ export class RouterService {
     this.router.navigate(['/login']);
   }
 
+  goToLogs() {
+    this.router.navigate(['/adminlogs']);
+  }
+
   goToHome() {
     this.router.navigate(['']);
   }

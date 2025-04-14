@@ -33,7 +33,14 @@ export class TeacherAssigmentsComponent implements OnInit {
   private store = inject(Store);
   private uploadService = inject(AssignmentUploadService);
 
-  assignments$ = this.store.select(selectAllAssignments);
+  assignments$ = this.store
+    .select(selectAllAssignments)
+    .pipe(
+      map((assignments) =>
+        assignments.filter((a) => a.teacherId === this.user()?.id)
+      )
+    );
+
   user = this.store.selectSignal(selectUser);
   allCourses$ = this.store.select(selectAllCourses);
 
@@ -226,6 +233,7 @@ export class TeacherAssigmentsComponent implements OnInit {
 
   deleteConfirmed() {
     const id = this.assignmentToDelete()?.id;
+    console.log('🗑️ ID to delete:', id);
     if (id) this.store.dispatch(deleteAssignment({ id }));
     this.cancelDelete();
   }

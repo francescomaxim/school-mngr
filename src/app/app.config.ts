@@ -16,6 +16,7 @@ import { assignmentsReducer } from './stores/assigments-store/assigments.reducer
 import { AssignmentsEffects } from './stores/assigments-store/assigments.effects';
 import { provideStorage, getStorage } from '@angular/fire/storage';
 import { getFirestore, provideFirestore } from '@angular/fire/firestore';
+import { LoggerEffects } from './stores/log.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -31,6 +32,6 @@ export const appConfig: ApplicationConfig = {
     provideStorage(() => getStorage()),
     provideFirestore(() => getFirestore()),
 
-    provideEffects(CoursesEffects, AssignmentsEffects),
+    provideEffects(CoursesEffects, AssignmentsEffects, LoggerEffects),
   ],
 };
