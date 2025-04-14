@@ -9,7 +9,7 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './teacher-attendance.component.css',
 })
 export class TeacherAttendanceComponent {
-  courses = ['Matematică', 'Algoritmi', 'Programare'];
+  courses = ['Algortmi', 'Algoritmi', 'Programare'];
   selectedCourse = this.courses[0];
   selectedDate = new Date().toISOString().split('T')[0];
 

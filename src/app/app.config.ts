@@ -14,6 +14,7 @@ import { coursesReducer } from './stores/courses-store/courses.reducer';
 import { CoursesEffects } from './stores/courses-store/courses.effects';
 import { assignmentsReducer } from './stores/assigments-store/assigments.reducer';
 import { AssignmentsEffects } from './stores/assigments-store/assigments.effects';
+import { LogEffects } from './stores/log.effects';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +28,6 @@ export const appConfig: ApplicationConfig = {
     provideAuth(() => getAuth()),
     provideDatabase(() => getDatabase()),
 
-    provideEffects(CoursesEffects, AssignmentsEffects),
+    provideEffects(CoursesEffects, AssignmentsEffects, LogEffects),
   ],
 };
