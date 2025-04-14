@@ -1,4 +1,5 @@
 import { Injectable, inject } from '@angular/core';
+import { Firestore, collection, getDocs } from '@angular/fire/firestore';
 import { FirestoreService } from '../../shared/services/firestore.service';
 import { Assignment, Submission } from './assigment.model';
 import { Observable, map } from 'rxjs';
@@ -6,6 +7,7 @@ import { Observable, map } from 'rxjs';
 @Injectable({ providedIn: 'root' })
 export class AssignmentFirestoreService {
   private db = inject(FirestoreService<Assignment>);
+  private firestore = inject(Firestore); // ✅ injectăm Firestore corect
   private collection = 'assignments';
 
   getAll(): Observable<Assignment[]> {
@@ -54,7 +56,6 @@ export class AssignmentFirestoreService {
     );
   }
 
-  // ✅ Adăugare submission (student uploads homework)
   async addSubmission(
     assignmentId: string,
     submission: Submission
@@ -62,9 +63,50 @@ export class AssignmentFirestoreService {
     const current = await this.db
       .getById(this.collection, assignmentId)
       .toPromise();
-    const updatedSubmissions = [...(current?.submissions ?? []), submission];
+
+    if (!current) {
+      throw new Error(`Assignment with ID ${assignmentId} does not exist.`);
+    }
+
+    const updatedSubmissions = [...(current.submissions ?? []), submission];
+
     return this.db.update(this.collection, assignmentId, {
       submissions: updatedSubmissions,
     });
+  }
+
+  async submitAssignmentFile(
+    assignmentId: string,
+    studentId: string,
+    submission: Submission
+  ): Promise<void> {
+    const path = `submissions/${assignmentId}/students/${studentId}`;
+    return this.db.set(path, submission);
+  }
+
+  async getSubmissionsForAssignment(
+    assignmentId: string
+  ): Promise<Submission[]> {
+    const path = `submissions/${assignmentId}/students`;
+    const colRef = collection(this.firestore, path);
+    const snapshot = await getDocs(colRef);
+    return snapshot.docs.map((doc) => doc.data() as Submission);
+  }
+
+  async getSubmission(
+    assignmentId: string,
+    studentId: string
+  ): Promise<Submission | null> {
+    const path = `submissions/${assignmentId}/students/${studentId}`;
+    return this.db.getDocument(path);
+  }
+
+  async gradeSubmission(
+    assignmentId: string,
+    studentId: string,
+    grade: number
+  ): Promise<void> {
+    const path = `submissions/${assignmentId}/students`;
+    return this.db.update(path, studentId, { grade });
   }
 }

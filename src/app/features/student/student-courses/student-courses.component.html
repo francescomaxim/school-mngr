@@ -1,50 +1,124 @@
 <div class="container my-5 text-white">
   <h2 class="mb-4">📚 Cursurile Mele</h2>
 
-  <!-- Cursuri active -->
-  <div class="row g-4">
-    <div class="col-md-6 col-lg-4" *ngFor="let course of courses">
-      <div class="card bg-secondary h-100 shadow-sm">
-        <div class="card-body d-flex flex-column">
-          <h5 class="card-title">{{ course.title }}</h5>
-          <p class="card-text text-white-50">{{ course.description }}</p>
+  <!-- Cursuri înscrise -->
+  <!-- Cursuri înscrise -->
+  <div class="d-flex flex-wrap justify-content-center gap-4">
+    <div
+      *ngFor="let course of enrolledCourses$ | async"
+      class="card bg-secondary text-white shadow"
+      style="width: 320px; min-height: 330px"
+    >
+      <div class="card-body d-flex flex-column">
+        <h5 class="card-title">{{ course.title }}</h5>
+        <p class="card-text text-white-50">{{ course.description }}</p>
 
-          <ul class="list-unstyled small mb-3">
-            <li>
-              👨‍🏫 Profesor: <strong>{{ course.teacher }}</strong>
-            </li>
-            <li>
-              📝 Teme: <strong>{{ course.assignmentsCount }}</strong>
-            </li>
-            <li>
-              ✅ Prezență: <strong>{{ course.attendance }}%</strong>
-            </li>
-          </ul>
+        <ul class="list-unstyled small mb-3">
+          <li>
+            👨‍🏫 Profesor:
+            <strong>{{ course.teacherName || "Necunoscut" }}</strong>
+          </li>
+          <li>📝 Teme: <strong>--</strong></li>
+          <li>✅ Prezență: <strong>--%</strong></li>
+        </ul>
 
-          <div class="mt-auto d-flex justify-content-between">
-            <button
-              class="btn btn-outline-light btn-sm"
-              (click)="goToDetails(course.id)"
-            >
-              Detalii
-            </button>
-            <button
-              class="btn btn-outline-warning btn-sm"
-              (click)="goToAssignments(course.id)"
-            >
-              Vezi Teme
-            </button>
-          </div>
+        <div class="mt-auto d-flex justify-content-between">
+          <button
+            class="btn btn-outline-light btn-sm"
+            (click)="goToDetails(course.id!)"
+          >
+            Detalii
+          </button>
+          <button
+            class="btn btn-outline-warning btn-sm"
+            (click)="goToAssignments(course.id!)"
+          >
+            Vezi Teme
+          </button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- Empty state -->
-  <div *ngIf="courses.length === 0" class="text-center mt-5 text-white-50">
+  <div
+    *ngIf="(enrolledCourses$ | async)?.length === 0"
+    class="text-center mt-5 text-white-50"
+  >
     <p>Nu ești înscris la niciun curs momentan.</p>
-    <button class="btn btn-outline-warning mt-2">
-      Vezi Cursuri Disponibile
+  </div>
+
+  <!-- Buton cursuri disponibile -->
+  <div class="text-center mt-4">
+    <button class="btn btn-outline-warning" (click)="toggleAvailableCourses()">
+      {{
+        showAvailableCourses()
+          ? "Închide Cursuri Disponibile"
+          : "Vezi Cursuri Disponibile"
+      }}
     </button>
+  </div>
+
+  <!-- Pop-out: Cursuri disponibile -->
+  <div
+    *ngIf="showAvailableCourses()"
+    class="modal-backdrop d-flex justify-content-center align-items-center"
+    style="
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background-color: rgba(0, 0, 0, 0.7);
+      z-index: 1050;
+    "
+  >
+    <div
+      class="bg-dark text-white p-4 rounded shadow"
+      style="width: 100%; max-width: 600px"
+    >
+      <h5 class="mb-3">📖 Cursuri Disponibile</h5>
+
+      <div
+        *ngIf="(availableCourses$ | async)?.length === 0"
+        class="text-white-50"
+      >
+        Nu sunt cursuri disponibile momentan.
+      </div>
+
+      <div class="mb-3" *ngFor="let course of availableCourses$ | async">
+        <div class="bg-secondary rounded p-3 mb-2 shadow-sm">
+          <h6 class="mb-1">{{ course.title }}</h6>
+          <p class="mb-1 text-white-50">{{ course.description }}</p>
+          <p class="small mb-2">
+            👨‍🏫 Profesor:
+            <strong>{{ course.teacherName || "Necunoscut" }}</strong>
+          </p>
+          <!-- În Popout: butonul "Înscrie-te" -->
+          <button
+            class="btn btn-sm btn-outline-light"
+            (click)="onEnroll(course.id!)"
+            [disabled]="loadingCourseId() === course.id"
+          >
+            <ng-container
+              *ngIf="loadingCourseId() === course.id; else enrollText"
+            >
+              <span class="spinner-border spinner-border-sm me-1"></span> Se
+              înrolează...
+            </ng-container>
+            <ng-template #enrollText>➕ Înscrie-te</ng-template>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-end">
+        <button
+          class="btn btn-outline-light"
+          (click)="toggleAvailableCourses()"
+        >
+          Închide
+        </button>
+      </div>
+    </div>
   </div>
 </div>

@@ -55,3 +55,17 @@ export const updateCourseFailure = createAction(
   '[Courses] Update Course Failure',
   props<{ error: string }>()
 );
+
+export const enrollInCourse = createAction(
+  '[Student] Enroll In Course',
+  props<{ studentId: string; courseId: string }>()
+);
+
+export const enrollInCourseSuccess = createAction(
+  '[Student] Enroll In Course Success'
+);
+
+export const enrollInCourseFailure = createAction(
+  '[Student] Enroll In Course Failure',
+  props<{ error: any }>()
+);

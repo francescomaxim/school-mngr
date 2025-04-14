@@ -15,9 +15,12 @@ import {
   updateCourse,
   updateCourseSuccess,
   updateCourseFailure,
+  enrollInCourse,
+  enrollInCourseSuccess,
+  enrollInCourseFailure,
 } from './courses.actions';
 import { selectUser } from '../auth-store/auth.selectors';
-import { catchError, map, switchMap, withLatestFrom, of } from 'rxjs';
+import { catchError, map, switchMap, withLatestFrom, of, mergeMap } from 'rxjs';
 
 @Injectable()
 export class CoursesEffects {
@@ -31,15 +34,16 @@ export class CoursesEffects {
       ofType(loadCourses),
       withLatestFrom(this.store.select(selectUser)),
       switchMap(([_, user]) => {
-        if (!user || user.role !== 'teacher') {
-          return of(
-            loadCoursesFailure({
-              error: 'User not authorized or not a teacher',
-            })
-          );
+        if (!user) {
+          return of(loadCoursesFailure({ error: 'User not authenticated' }));
         }
 
-        return this.coursesService.getCoursesByTeacher(user.id).pipe(
+        const isTeacher = user.role === 'teacher';
+        const fetch$ = isTeacher
+          ? this.coursesService.getCoursesByTeacher(user.id)
+          : this.coursesService.getAllCourses();
+
+        return fetch$.pipe(
           map((courses) => loadCoursesSuccess({ courses })),
           catchError((error) =>
             of(loadCoursesFailure({ error: error.message }))
@@ -84,6 +88,18 @@ export class CoursesEffects {
           () => updateCourseSuccess({ courseId, updatedCourse }),
           (error) => updateCourseFailure({ error: error.message })
         )
+      )
+    )
+  );
+
+  enrollInCourse$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(enrollInCourse),
+      mergeMap(({ studentId, courseId }) =>
+        this.coursesService
+          .enrollStudentToCourse(studentId, courseId)
+          .then(() => enrollInCourseSuccess())
+          .catch((error) => enrollInCourseFailure({ error }))
       )
     )
   );

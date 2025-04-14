@@ -30,6 +30,11 @@ export class FirestoreService<T extends { id?: string }> {
     ) as CollectionReference<DocumentData>;
   }
 
+  async set(path: string, data: T): Promise<void> {
+    const ref = doc(this.firestore, path);
+    await setDoc(ref, data);
+  }
+
   getAll(path: string): Observable<T[]> {
     const colRef = this.getCollection(path);
     return from(getDocs(colRef)).pipe(
@@ -37,6 +42,13 @@ export class FirestoreService<T extends { id?: string }> {
         snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() } as T))
       )
     );
+  }
+
+  getDocument(path: string): Promise<T | null> {
+    const docRef = doc(this.firestore, path);
+    return getDoc(docRef).then((snapshot) => {
+      return snapshot.exists() ? (snapshot.data() as T) : null;
+    });
   }
 
   getById(path: string, id: string): Observable<T | undefined> {

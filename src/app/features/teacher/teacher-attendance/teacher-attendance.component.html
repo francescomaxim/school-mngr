@@ -4,17 +4,22 @@
     <div class="d-flex gap-2">
       <select
         class="form-select bg-dark text-white border-secondary"
-        [(ngModel)]="selectedCourse"
+        (change)="onCourseChange($event)"
       >
-        <option *ngFor="let course of courses" [value]="course">
-          {{ course }}
+        <option disabled selected>Select a course</option>
+        <option
+          *ngFor="let course of teacherCourses$ | async"
+          [value]="course.id"
+        >
+          {{ course.title }}
         </option>
       </select>
 
       <input
         type="date"
         class="form-control bg-dark text-white border-secondary"
-        [(ngModel)]="selectedDate"
+        [(ngModel)]="selectedDateValue"
+        (change)="onDateChange()"
       />
     </div>
   </div>
@@ -30,7 +35,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr *ngFor="let student of students">
+        <tr *ngFor="let student of filteredStudents">
           <td>{{ student.name }}</td>
           <td>{{ student.email }}</td>
           <td>
@@ -76,7 +81,7 @@
     <div class="col-md-4">
       <div class="bg-secondary rounded p-3 text-center">
         <h6 class="text-white">Total Students</h6>
-        <p class="display-6">{{ students.length }}</p>
+        <p class="display-6">{{ students().length }}</p>
       </div>
     </div>
     <div class="col-md-4">

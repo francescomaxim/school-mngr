@@ -1,0 +1,33 @@
+<div class="container my-5 text-white">
+  <h2 class="mb-4">🧾 Loguri Activitate</h2>
+
+  <div class="table-responsive bg-dark p-3 rounded shadow">
+    <table class="table table-dark table-bordered text-center align-middle">
+      <thead class="table-secondary text-dark">
+        <tr>
+          <th>Utilizator</th>
+          <th>Acțiune</th>
+          <th>Detalii</th>
+          <th>Data</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let log of logs$ | async">
+          <td>{{ log.userId }}</td>
+          <td>
+            <span class="badge bg-primary">{{ log.actionType }}</span>
+          </td>
+          <td class="text-start">{{ log.details }}</td>
+          <td>{{ log.timestamp | date : "short" }}</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div
+      *ngIf="(logs$ | async)?.length === 0"
+      class="text-white-50 text-center"
+    >
+      Nu există loguri momentan.
+    </div>
+  </div>
+</div>

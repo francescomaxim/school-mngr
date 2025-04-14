@@ -15,6 +15,7 @@ import { StudentTodoComponent } from './features/student/student-todo/student-to
 import { adminGuard } from './core/authentication/guards/admin.guard';
 import { teacherGuard } from './core/authentication/guards/teacher.guard';
 import { studentGuard } from './core/authentication/guards/student.guard';
+import { AdminLogsComponent } from './features/admin/admin-logs/admin-logs.component';
 
 export const routes: Routes = [
   {
@@ -25,6 +26,11 @@ export const routes: Routes = [
     path: 'adminpanel',
     canActivate: [adminGuard],
     component: AdminPanelComponent,
+  },
+  {
+    path: 'adminlogs',
+    canActivate: [adminGuard],
+    component: AdminLogsComponent,
   },
   {
     path: 'manage-users',

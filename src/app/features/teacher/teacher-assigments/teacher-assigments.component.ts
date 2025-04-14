@@ -18,6 +18,9 @@ import { selectUser } from '../../../stores/auth-store/auth.selectors';
 
 import { selectAllCourses } from '../../../stores/courses-store/courses.selectors';
 import { loadCourses } from '../../../stores/courses-store/courses.actions';
+import { AssignmentUploadService } from '../../../core/services/assigments-upload.service';
+import { UserService } from '../../../core/services/user.service';
+import { AssignmentFirestoreService } from '../../services/assigments-firestore.service';
 
 @Component({
   selector: 'app-teacher-assigments',
@@ -28,15 +31,38 @@ import { loadCourses } from '../../../stores/courses-store/courses.actions';
 })
 export class TeacherAssigmentsComponent implements OnInit {
   private store = inject(Store);
+  private uploadService = inject(AssignmentUploadService);
 
-  assignments$ = this.store.select(selectAllAssignments);
+  assignments$ = this.store
+    .select(selectAllAssignments)
+    .pipe(
+      map((assignments) =>
+        assignments.filter((a) => a.teacherId === this.user()?.id)
+      )
+    );
+
   user = this.store.selectSignal(selectUser);
   allCourses$ = this.store.select(selectAllCourses);
+
+  submissionListModal = signal<{
+    assignmentId: string;
+    assignmentTitle: string;
+    submissions: {
+      fullName: string;
+      email: string;
+      fileUrl: string;
+      submittedAt: string;
+      studentId: string;
+      grade?: number;
+    }[];
+  } | null>(null);
 
   showAddModal = signal(false);
   assignmentToDelete = signal<Assignment | null>(null);
   selectedAssignment = signal<Assignment | null>(null);
   editMode = signal(false);
+
+  private userService = inject(UserService);
 
   newAssignment = signal<Partial<Assignment>>({
     title: '',
@@ -62,6 +88,63 @@ export class TeacherAssigmentsComponent implements OnInit {
         this.courseMap.set(c.id!, c.title);
       });
     });
+  }
+
+  private firestoreService = inject(AssignmentFirestoreService);
+
+  async gradeStudent(studentId: string, grade: number) {
+    const assignmentId = this.submissionListModal()?.assignmentId;
+    if (!assignmentId || !studentId || !grade) return;
+
+    try {
+      await this.firestoreService.gradeSubmission(
+        assignmentId,
+        studentId,
+        grade
+      );
+      console.log(`✅ Notă ${grade} salvată pentru student ${studentId}`);
+    } catch (error) {
+      console.error('❌ Eroare la salvarea notei:', error);
+    }
+  }
+
+  async viewSubmissions(assignment: Assignment) {
+    if (!assignment.id) return;
+
+    try {
+      const submissions =
+        await this.firestoreService.getSubmissionsForAssignment(assignment.id);
+
+      const studentIds = submissions.map((s) => s.studentId);
+      const students = await Promise.all(
+        studentIds.map((id) => this.userService.getUserByIdOnce(id))
+      );
+
+      const enrichedSubmissions = submissions.map((sub) => {
+        const student = students.find((s) => s?.id === sub.studentId);
+
+        return {
+          fullName: student?.fullName ?? 'Necunoscut',
+          email: student?.email ?? 'necunoscut@student.com',
+          fileUrl: sub.fileUrl,
+          submittedAt: sub.submittedAt,
+          studentId: sub.studentId,
+          ...(sub.grade !== undefined ? { grade: sub.grade } : {}), // ✅ doar dacă există
+        };
+      });
+
+      this.submissionListModal.set({
+        assignmentId: assignment.id,
+        assignmentTitle: assignment.title,
+        submissions: enrichedSubmissions,
+      });
+    } catch (error) {
+      console.error('❌ Eroare la încărcarea submissions:', error);
+    }
+  }
+
+  closeSubmissionsModal() {
+    this.submissionListModal.set(null);
   }
 
   getCourseTitle(courseId: string): string {
@@ -99,15 +182,41 @@ export class TeacherAssigmentsComponent implements OnInit {
     });
   }
 
-  submitAssignment() {
+  async submitAssignment() {
     const userId = this.user()?.id;
-    if (!userId) return;
+    const file = this.importedFile();
+
+    if (
+      !userId ||
+      !this.newAssignment().title ||
+      !this.newAssignment().courseId
+    )
+      return;
 
     const assignment: Assignment = {
       ...this.newAssignment(),
       teacherId: userId,
       createdAt: new Date().toISOString(),
     } as Assignment;
+
+    // 1. Adaugă assignment-ul (fără fileUrl inițial)
+    const generatedId = `${Date.now()}`;
+    assignment.id = generatedId;
+
+    // 2. Dacă există fișier, urcă-l și adaugă URL
+    if (file) {
+      const fileUrl = await this.uploadService.uploadAssignmentFile(
+        file,
+        generatedId
+      );
+      assignment.submissions = [
+        {
+          studentId: 'admin', // placeholder, poate fi ignorat sau înlocuit
+          fileUrl,
+          submittedAt: new Date().toISOString(),
+        },
+      ];
+    }
 
     this.store.dispatch(addAssignment({ assignment }));
     this.cancelAdd();
@@ -124,6 +233,7 @@ export class TeacherAssigmentsComponent implements OnInit {
 
   deleteConfirmed() {
     const id = this.assignmentToDelete()?.id;
+    console.log('🗑️ ID to delete:', id);
     if (id) this.store.dispatch(deleteAssignment({ id }));
     this.cancelDelete();
   }
@@ -142,9 +252,11 @@ export class TeacherAssigmentsComponent implements OnInit {
   cancelViewEdit() {
     this.selectedAssignment.set(null);
     this.editMode.set(false);
+    this.editedFile.set(null);
+    this.editImportType = 'image';
   }
 
-  submitEdit() {
+  async submitEdit() {
     const assignment = this.selectedAssignment();
     if (!assignment || !assignment.id) return;
 
@@ -154,6 +266,22 @@ export class TeacherAssigmentsComponent implements OnInit {
       dueDate: assignment.dueDate,
       courseId: assignment.courseId,
     };
+
+    const file = this.editedFile();
+
+    if (file) {
+      const fileUrl = await this.uploadService.uploadAssignmentFile(
+        file,
+        assignment.id
+      );
+      changes.submissions = [
+        {
+          studentId: 'admin', // placeholder
+          fileUrl,
+          submittedAt: new Date().toISOString(),
+        },
+      ];
+    }
 
     this.store.dispatch(updateAssignment({ id: assignment.id, changes }));
     this.cancelViewEdit();
@@ -186,5 +314,42 @@ export class TeacherAssigmentsComponent implements OnInit {
       alert('❌ Invalid file!');
       this.importedFile.set(null);
     }
+  }
+
+  editImportType = 'image';
+  editedFile = signal<File | null>(null);
+
+  downloadFile(fileUrl: string | undefined) {
+    if (!fileUrl) return;
+    const a = document.createElement('a');
+    a.href = fileUrl;
+    a.target = '_blank';
+    a.download = fileUrl.split('/').pop() ?? 'assignment_file';
+    a.click();
+  }
+
+  handleEditImportImage(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (!file || !file.type.startsWith('image/')) {
+      alert('❌ Invalid image file!');
+      this.editedFile.set(null);
+      return;
+    }
+    this.editedFile.set(file);
+  }
+
+  handleEditImportFile(event: Event) {
+    const file = (event.target as HTMLInputElement).files?.[0];
+    if (
+      !file ||
+      (!file.type.includes('json') &&
+        !file.name.endsWith('.json') &&
+        !file.name.endsWith('.docx'))
+    ) {
+      alert('❌ Invalid file!');
+      this.editedFile.set(null);
+      return;
+    }
+    this.editedFile.set(file);
   }
 }

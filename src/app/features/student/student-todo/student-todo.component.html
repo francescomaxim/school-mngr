@@ -17,14 +17,14 @@
   <ul class="list-group">
     <li
       class="list-group-item bg-dark text-white d-flex justify-content-between align-items-center"
-      *ngFor="let task of tasks; let i = index"
+      *ngFor="let task of tasks"
     >
       <div>
         <input
           type="checkbox"
           class="form-check-input me-2"
           [checked]="task.completed"
-          (change)="toggleComplete(i)"
+          (change)="toggleComplete(task)"
         />
         <span
           [ngClass]="{
@@ -34,7 +34,7 @@
           {{ task.label }}
         </span>
       </div>
-      <button class="btn btn-sm btn-outline-danger" (click)="removeTask(i)">
+      <button class="btn btn-sm btn-outline-danger" (click)="removeTask(task)">
         🗑️
       </button>
     </li>

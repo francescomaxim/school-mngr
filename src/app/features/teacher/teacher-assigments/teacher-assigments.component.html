@@ -44,6 +44,13 @@
               Details
             </button>
             <button
+              class="btn btn-outline-success btn-sm"
+              (click)="viewSubmissions(assignment)"
+            >
+              Submissions
+            </button>
+
+            <button
               class="btn btn-outline-primary btn-sm me-1"
               (click)="onEdit(assignment)"
             >
@@ -59,6 +66,87 @@
         </tr>
       </tbody>
     </table>
+  </div>
+</div>
+<!-- Modal: View Submissions -->
+<div
+  *ngIf="submissionListModal()"
+  class="modal-backdrop d-flex justify-content-center align-items-center"
+  style="
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1050;
+  "
+>
+  <div
+    class="bg-dark text-white p-4 rounded shadow"
+    style="width: 100%; max-width: 650px"
+  >
+    <h5 class="mb-3">
+      📥 Submissions - {{ submissionListModal()?.assignmentTitle }}
+    </h5>
+
+    <ul
+      *ngIf="submissionListModal()?.submissions?.length; else noSubmissions"
+      class="list-group text-dark"
+    >
+      <li
+        class="list-group-item d-flex justify-content-between align-items-center flex-wrap gap-2"
+        *ngFor="let sub of submissionListModal()?.submissions"
+      >
+        <div class="flex-grow-1">
+          <strong>{{ sub.fullName }}</strong
+          ><br />
+          <small>{{ sub.email }}</small
+          ><br />
+          <span class="text-muted"
+            >Trimis la: {{ sub.submittedAt | date : "medium" }}</span
+          >
+        </div>
+
+        <a
+          class="btn btn-sm btn-outline-success"
+          [href]="sub.fileUrl"
+          target="_blank"
+          download
+        >
+          ⬇️ Fișier
+        </a>
+
+        <div class="d-flex align-items-center gap-2">
+          <input
+            type="number"
+            class="form-control form-control-sm"
+            style="width: 80px"
+            [(ngModel)]="sub.grade"
+            placeholder="Notă"
+            min="1"
+            max="10"
+          />
+          <button
+            class="btn btn-sm btn-warning"
+            (click)="gradeStudent(sub.studentId, sub.grade!)"
+            [disabled]="!sub.grade"
+          >
+            ✅ Notează
+          </button>
+        </div>
+      </li>
+    </ul>
+
+    <ng-template #noSubmissions>
+      <div class="text-center text-white-50">Nicio temă trimisă încă.</div>
+    </ng-template>
+
+    <div class="d-flex justify-content-end mt-3">
+      <button class="btn btn-warning" (click)="closeSubmissionsModal()">
+        Închide
+      </button>
+    </div>
   </div>
 </div>
 
@@ -261,6 +349,51 @@
         [(ngModel)]="selectedAssignment()!.dueDate"
         [readonly]="!editMode()"
       />
+    </div>
+
+    <!-- File Preview / Replace -->
+    <div class="mb-3">
+      <label class="form-label">Attached File</label>
+
+      <!-- View Mode -->
+      <div
+        *ngIf="!editMode() && selectedAssignment()?.submissions?.[0]?.fileUrl"
+        class="d-flex justify-content-between align-items-center gap-2"
+      >
+        <span class="text-truncate flex-grow-1">
+          {{ selectedAssignment()?.submissions?.[0]?.fileUrl | slice: -40 }}
+        </span>
+        <button
+          class="btn btn-outline-light btn-sm"
+          (click)="downloadFile(selectedAssignment()?.submissions?.[0]?.fileUrl)"
+        >
+          ⬇️ Download
+        </button>
+      </div>
+
+      <!-- Edit Mode -->
+      <div *ngIf="editMode()" class="d-flex flex-column gap-2">
+        <select class="form-select" [(ngModel)]="editImportType">
+          <option value="image">📷 Image</option>
+          <option value="file">📄 File (JSON, DOCX)</option>
+        </select>
+
+        <input
+          *ngIf="editImportType === 'image'"
+          type="file"
+          accept="image/*"
+          class="form-control"
+          (change)="handleEditImportImage($event)"
+        />
+
+        <input
+          *ngIf="editImportType === 'file'"
+          type="file"
+          accept=".json,.docx"
+          class="form-control"
+          (change)="handleEditImportFile($event)"
+        />
+      </div>
     </div>
 
     <div class="d-flex justify-content-end gap-2">
